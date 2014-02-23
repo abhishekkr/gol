@@ -8,21 +8,19 @@ import (
 )
 
 
-func ZmqRequestSocket(ip string, req_port int, rep_port int) *zmq.Socket {
-  fmt.Printf("ZMQ REQ/REP Client at port %d and %d\n", req_port, rep_port)
+func ZmqRequestSocket(ip string, request_ports ...int) *zmq.Socket {
   context, _ := zmq.NewContext()
   socket, _ := context.NewSocket(zmq.REQ)
-  socket.Connect(fmt.Sprintf("tcp://%s:%d", ip, req_port))
-  socket.Connect(fmt.Sprintf("tcp://%s:%d", ip, rep_port))
-
+  for _, _port := range request_ports {
+    socket.Connect(fmt.Sprintf("tcp://%s:%d", ip, _port))
+  }
   return socket
 }
 
 
-func ZmqRequest(_socket *zmq.Socket, dat ...string) string{
+func ZmqRequest(_socket *zmq.Socket, dat ...string) (string, error){
   _msg := strings.Join(dat, " ")
   _socket.Send([]byte(_msg), 0)
-  response, _ := _socket.Recv(0)
-
-  return string(response)
+  response, err := _socket.Recv(0)
+  return string(response), err
 }

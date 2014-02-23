@@ -24,5 +24,8 @@ func get_n_put(messages []string) string{
 
 func main(){
   socket := golzmq.ZmqReplySocket("127.0.0.1", 9797, 9898)
-  golzmq.ZmqReply(socket, get_n_put)
+  for {
+    err := golzmq.ZmqReply(socket, get_n_put)
+    if err != nil { fmt.Println(err) }
+  }
 }
