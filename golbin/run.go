@@ -7,19 +7,22 @@ import (
   "fmt"
 )
 
+
 type Console struct {
     Command, StdInput, StdOutput string
 }
 
-func start_Command(sys_Command string) *exec.Cmd{
-  cmd_tokens := strings.Split(sys_Command, " ")
+
+func start_command(sys_command string) *exec.Cmd{
+  cmd_tokens := strings.Split(sys_command, " ")
   cmd := cmd_tokens[0]
   args := strings.Join(cmd_tokens[1:], " ")
   return exec.Command(cmd, args)
 }
 
+
 func (konsole *Console) Run() {
-  cmd := start_Command(konsole.Command)
+  cmd := start_command(konsole.Command)
 
   if konsole.StdInput != ""{ cmd.Stdin = strings.NewReader(konsole.StdInput) }
 
@@ -32,6 +35,7 @@ func (konsole *Console) Run() {
     konsole.StdOutput = fmt.Sprintf("Error: %s", err.Error())
   }
 }
+
 
 func ExecOutput(cmdline string) string {
   cmd := start_Command(cmdline)
