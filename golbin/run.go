@@ -38,7 +38,7 @@ func (konsole *Console) Run() {
 
 
 func ExecOutput(cmdline string) string {
-  cmd := start_Command(cmdline)
+  cmd := start_command(cmdline)
 
   var out bytes.Buffer
   cmd.Stdout = &out
