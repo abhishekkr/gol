@@ -3,6 +3,7 @@ package goltime
 import (
   "strconv"
   "time"
+  "net/http"
 )
 
 
@@ -27,6 +28,14 @@ func CreateTimestamp(time_point []string) Timestamp{
     Min: min,
     Sec: sec,
   }
+}
+
+
+func TimestampFromHTTPRequest(req *http.Request) Timestamp{
+  return CreateTimestamp([]string {
+    req.Form["year"][0], req.Form["month"][0], req.Form["day"][0],
+    req.Form["hour"][0], req.Form["min"][0], req.Form["sec"][0],
+  })
 }
 
 
