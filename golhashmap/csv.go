@@ -23,11 +23,12 @@ func Hashmap_to_csv(hmap HashMap) string {
 		key_val := []string{key, value}
 		err := csvWriter.Write(key_val)
 		if err != nil {
+			fmt.Printf("Error converting Hashmap values to CSV:\n%q\n", hmap)
 			fmt.Println(err)
 		}
 	}
 	csvWriter.Flush()
-	return csvio.String()
+	return strings.TrimSpace(csvio.String())
 }
 
 func (csvmap CSVmap) FromHashMap(hmap HashMap) string {
@@ -37,6 +38,7 @@ func (csvmap CSVmap) FromHashMap(hmap HashMap) string {
 func Csv_to_hashmap(csvalues string) HashMap {
 	var hmap HashMap
 	hmap = make(HashMap)
+	csvalues = strings.TrimSpace(csvalues)
 	csvio := bytes.NewBufferString(csvalues)
 	csvReader := csv.NewReader(csvio)
 
@@ -45,7 +47,8 @@ func Csv_to_hashmap(csvalues string) HashMap {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			panic(err)
+			fmt.Printf("Error converting CSV values to Hashmap:\n%s\n", csvalues)
+			fmt.Println(err)
 		}
 		hmap[fields[0]] = strings.Join(fields[1:], ",")
 	}
