@@ -30,8 +30,8 @@ func CreateTimestamp(time_point []string) Timestamp {
 
 func TimestampFromHTTPRequest(req *http.Request) Timestamp {
 	return CreateTimestamp([]string{
-		req.Form["year"][0], req.Form["month"][0], req.Form["day"][0],
-		req.Form["hour"][0], req.Form["min"][0], req.Form["sec"][0],
+		req.FormValue("year"), req.FormValue("month"), req.FormValue("day"),
+		req.FormValue("hour"), req.FormValue("min"), req.FormValue("sec"),
 	})
 }
 
