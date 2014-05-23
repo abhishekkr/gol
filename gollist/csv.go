@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ func init() {
 type CSVmap struct{}
 
 /* convert list elements to single line CSV */
-func List_to_csv(list []string) string {
+func ListToCSV(list []string) string {
 	csvio := bytes.NewBufferString("")
 	csvWriter := csv.NewWriter(csvio)
 
@@ -29,13 +30,13 @@ func List_to_csv(list []string) string {
 	return strings.TrimSpace(csvio.String())
 }
 
-/* CSVmap proxy for List_to_csv */
+/* CSVmap proxy for ListToCSV */
 func (csvmap CSVmap) FromList(list []string) string {
-	return List_to_csv(list)
+	return ListToCSV(list)
 }
 
 /* entertains each and every field in CSV as element of list */
-func Csv_to_list(csvalues string) []string {
+func CSVToList(csvalues string) []string {
 	var list []string
 
 	csvalues = strings.TrimSpace(csvalues)
@@ -58,7 +59,33 @@ func Csv_to_list(csvalues string) []string {
 	return list
 }
 
-/* CSVmap proxy for Csv_to_list */
+/* CSVmap proxy for CSVToList */
 func (csvmap CSVmap) ToList(csvalues string) []string {
-	return Csv_to_list(string(csvalues))
+	return CSVToList(string(csvalues))
+}
+
+/* CSVmap proxy for CSVToList */
+func CSVToNumbers(csvalues string) ([]int, error) {
+	var (
+		numElement int
+		err        error
+		numList    []int
+	)
+
+	list := CSVToList(string(csvalues))
+	numList = make([]int, len(list))
+
+	for idx, element := range list {
+		numElement, err = strconv.Atoi(element)
+		numList[idx] = numElement
+	}
+	if err != nil {
+		return numList, err
+	}
+	return numList, nil
+}
+
+/* CSVmap proxy for CSVToNumbers */
+func (csvmap CSVmap) ToNumbers(csvalues string) ([]int, error) {
+	return CSVToNumbers(string(csvalues))
 }

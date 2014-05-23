@@ -10,18 +10,18 @@ func init() {
 type JSONmap struct{}
 
 /* convert list elements to single line JSON */
-func List_to_json(list []string) string {
+func ListToJSON(list []string) string {
 	jsonValues_bytes, _ := json.Marshal(list)
 	return string(jsonValues_bytes)
 }
 
-/* JSONmap proxy for List_to_json */
+/* JSONmap proxy for ListToJSON */
 func (jsonmap JSONmap) FromList(list []string) string {
-	return List_to_json(list)
+	return ListToJSON(list)
 }
 
 /* entertains single depth JSON as element of list */
-func Json_to_list(jsonValues string) []string {
+func JSONToList(jsonValues string) []string {
 	var list []string
 
 	jsonValues_bytes := []byte(jsonValues)
@@ -30,7 +30,7 @@ func Json_to_list(jsonValues string) []string {
 	return list
 }
 
-/* JSONmap proxy for Json_to_list */
+/* JSONmap proxy for JSONToList */
 func (jsonmap JSONmap) ToList(jsonValues string) []string {
-	return Json_to_list(jsonValues)
+	return JSONToList(jsonValues)
 }
