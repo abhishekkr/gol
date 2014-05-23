@@ -9,16 +9,16 @@ func init() {
 
 type JSONmap struct{}
 
-func Hashmap_to_json(hmap HashMap) string {
+func HashMapToJSON(hmap HashMap) string {
 	jsonalues_bytes, _ := json.Marshal(hmap)
 	return string(jsonalues_bytes)
 }
 
 func (jsonmap JSONmap) FromHashMap(hmap HashMap) string {
-	return Hashmap_to_json(hmap)
+	return HashMapToJSON(hmap)
 }
 
-func Json_to_hashmap(jsonalues string) HashMap {
+func JSONToHashMap(jsonalues string) HashMap {
 	var hmap HashMap
 	hmap = make(HashMap)
 
@@ -29,5 +29,5 @@ func Json_to_hashmap(jsonalues string) HashMap {
 }
 
 func (jsonmap JSONmap) ToHashMap(jsonalues string) HashMap {
-	return Json_to_hashmap(jsonalues)
+	return JSONToHashMap(jsonalues)
 }

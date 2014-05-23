@@ -15,7 +15,7 @@ func init() {
 
 type CSVmap struct{}
 
-func Hashmap_to_csv(hmap HashMap) string {
+func HashMapToCSV(hmap HashMap) string {
 	csvio := bytes.NewBufferString("")
 	csvWriter := csv.NewWriter(csvio)
 
@@ -32,10 +32,10 @@ func Hashmap_to_csv(hmap HashMap) string {
 }
 
 func (csvmap CSVmap) FromHashMap(hmap HashMap) string {
-	return Hashmap_to_csv(hmap)
+	return HashMapToCSV(hmap)
 }
 
-func Csv_to_hashmap(csvalues string) HashMap {
+func CSVToHashMap(csvalues string) HashMap {
 	var hmap HashMap
 	hmap = make(HashMap)
 	csvalues = strings.TrimSpace(csvalues)
@@ -56,5 +56,5 @@ func Csv_to_hashmap(csvalues string) HashMap {
 }
 
 func (csvmap CSVmap) ToHashMap(csvalues string) HashMap {
-	return Csv_to_hashmap(string(csvalues))
+	return CSVToHashMap(string(csvalues))
 }
