@@ -1,9 +1,9 @@
 package gollog_example
 
+import "os"
 
-type ReceiveStringReturnNil func(msg string)
+type ReceiveStringReturnNil func(log *os.File, msg string)
 
-
-func PassAndLog(foo ReceiveStringReturnNil){
-  foo("passed and logged")
+func PassAndLog(foo ReceiveStringReturnNil, logr *os.File) {
+	foo(logr, "passed and logged")
 }

@@ -1,21 +1,22 @@
 package main
 
 import (
-  "flag"
-  "github.com/abhishekkr/gol/gollog"
+	"flag"
 
-  "./helpers"
+	"github.com/abhishekkr/gol/gollog"
+
+	gollog_example "./helpers"
 )
 
 var (
-  logfile     = flag.String("log-file", "gol.log", "to dump run-logs to")
+	logfile = flag.String("log-file", "gol.log", "to dump run-logs to")
 )
 
+func main() {
+	flag.Parse()
+	logr := gollog.OpenLogFile(*logfile)
+	defer gollog.CloseLogFile(logr)
+	gollog.LogIt(logr, "sample logging")
 
-func main(){
-  flag.Parse()
-  gollog.LogFile = *logfile
-  gollog.Log_it("sample logging")
-
-  gollog_example.PassAndLog(gollog.Log_it)
+	gollog_example.PassAndLog(gollog.LogIt, logr)
 }
