@@ -14,6 +14,8 @@ var (
 
 func main() {
 	flag.Parse()
+	gollog.LogOnce(*logfile, "first message")
+
 	logr := gollog.OpenLogFile(*logfile)
 	defer gollog.CloseLogFile(logr)
 	gollog.LogIt(logr, "sample logging")

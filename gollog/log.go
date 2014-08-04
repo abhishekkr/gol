@@ -21,10 +21,18 @@ func CloseLogFile(log *os.File) {
 	log.Close()
 }
 
-// LogIt logs any string passed to it, into log file-handle
-func LogIt(log *os.File, msg string) {
-	n, err := io.WriteString(log, msg)
+// just write to given file handle
+func LogIt(fyl *os.File, lyn string) {
+	lyn = fmt.Sprintf("%s\n", lyn)
+	n, err := io.WriteString(fyl, lyn)
 	if err != nil {
 		fmt.Println(n, err)
 	}
+}
+
+// Open, Log, Close
+func LogOnce(logfile string, msg string) {
+	logr := OpenLogFile(logfile)
+	defer logr.Close()
+	LogIt(logr, msg)
 }
