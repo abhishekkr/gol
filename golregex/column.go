@@ -1,5 +1,10 @@
 package golregex
 
+import (
+	"fmt"
+	"regexp"
+)
+
 /*
  get alphanumeric string from required
 	'col' number column
@@ -11,7 +16,7 @@ func Column(dat string, separator string, col int) string {
 	for idx := 1; idx < col; idx++ {
 		pattern += fmt.Sprintf("[a-zA-Z0-9]+%s", separator)
 	}
-	pattern += "([a-zA-Z0-9]+)"
+	pattern += fmt.Sprintf("%s%s*", "([a-zA-Z0-9]+)", separator)
 	regx := regexp.MustCompile(pattern)
 	result := regx.FindStringSubmatch(dat)
 	if len(result) == 0 {
