@@ -17,7 +17,6 @@ func TCPServer(connection_string string, request_handler RequestParamFunc) {
 	}
 
 	defer server.Close()
-	fmt.Println("Listening at ", connection_string)
 	for {
 		connection, err := server.Accept()
 		if err != nil {
