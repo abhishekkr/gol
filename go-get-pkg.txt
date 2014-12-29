@@ -1,1 +1,3 @@
--tags zmq_3_x github.com/alecthomas/gozmq
+-tags zmq_4_x github.com/alecthomas/gozmq
+code.google.com/p/goprotobuf/proto
+code.google.com/p/goprotobuf/protoc-gen-go
