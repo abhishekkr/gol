@@ -1,9 +1,6 @@
 package golzmq
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 /* Structure to sustain ZMQ Proxy configuration */
 type ZmqProxyConfig struct {
@@ -14,23 +11,12 @@ type ZmqProxyConfig struct {
 }
 
 /* Create a Proxy connection for given ZmqProxyConfig */
-func ZmqProxySocket(proxy ZmqProxyConfig) error {
+func ZmqProxySocket(proxy ZmqProxyConfig) {
 	chan_source := make(chan []byte, 5)
 	chan_destination := make(chan []byte, 5)
 
 	go proxyDestination(proxy.DestinationIP, proxy.DestinationPorts, chan_source, chan_destination)
 	go proxySource(proxy.SourceIP, proxy.SourcePorts, chan_source, chan_destination)
-
-	for {
-		select {
-		/*
-			case nfo := <-proxyStream:
-				fmt.Println("~~", nfo)*/
-		case <-time.After(time.Second * 150):
-			fmt.Println("sayonara")
-			return nil
-		}
-	}
 }
 
 /* Create a ZMQ Proxy Reader from source of Proxy */
