@@ -2,7 +2,9 @@ package golzmq
 
 import "fmt"
 
-/* Structure to sustain ZMQ Proxy configuration */
+/*
+ZmqProxyConfig is structure to sustain ZMQ Proxy configuration.
+*/
 type ZmqProxyConfig struct {
 	DestinationIP    string
 	DestinationPorts []int
@@ -10,46 +12,51 @@ type ZmqProxyConfig struct {
 	SourcePorts      []int
 }
 
-/* Create a Proxy connection for given ZmqProxyConfig */
+/*
+ZmqProxySocket creates a Proxy connection for given ZmqProxyConfig.
+*/
 func ZmqProxySocket(proxy ZmqProxyConfig) {
-	chan_source := make(chan []byte, 5)
-	chan_destination := make(chan []byte, 5)
+	chanSource := make(chan []byte, 5)
+	chanDestination := make(chan []byte, 5)
 
-	go proxyDestination(proxy.DestinationIP, proxy.DestinationPorts, chan_source, chan_destination)
-	go proxySource(proxy.SourceIP, proxy.SourcePorts, chan_source, chan_destination)
+	go proxyDestination(proxy.DestinationIP, proxy.DestinationPorts, chanSource, chanDestination)
+	go proxySource(proxy.SourceIP, proxy.SourcePorts, chanSource, chanDestination)
 }
 
-/* Create a ZMQ Proxy Reader from source of Proxy */
-func proxyDestination(ip string, ports []int, chan_source chan []byte, chan_destination chan []byte) error {
+/*
+proxyDestination creates a ZMQ Proxy Reader from source of Proxy.
+*/
+func proxyDestination(ip string, ports []int, chanSource chan []byte, chanDestination chan []byte) error {
 	socket := ZmqRequestSocket(ip, ports)
 
 	for {
-		request := <-chan_destination
-		reply, err_request := ZmqRequestByte(socket, request)
-		if err_request != nil {
-			fmt.Println("ERROR:", err_request)
-			return err_request
+		request := <-chanDestination
+		reply, errRequest := ZmqRequestByte(socket, request)
+		if errRequest != nil {
+			fmt.Println("ERROR:", errRequest)
+			return errRequest
 		}
-		chan_source <- reply
+		chanSource <- reply
 	}
 }
 
-/* Create a ZMQ Proxy Reader from source of Proxy */
-func proxySource(ip string, ports []int, chan_source chan []byte, chan_destination chan []byte) error {
+/*
+proxySource creates a ZMQ Proxy Reader from source of Proxy.
+*/
+func proxySource(ip string, ports []int, chanSource chan []byte, chanDestination chan []byte) error {
 	socket := ZmqReplySocket(ip, ports)
 
-	reply_handler := func(request []byte) []byte {
-		chan_destination <- request
-		reply := <-chan_source
+	replyHandler := func(request []byte) []byte {
+		chanDestination <- request
+		reply := <-chanSource
 		return reply
 	}
 
 	for {
-		err_reply := ZmqReplyByte(socket, reply_handler)
-		if err_reply != nil {
-			fmt.Println("ERROR:", err_reply)
-			return err_reply
+		errReply := ZmqReplyByte(socket, replyHandler)
+		if errReply != nil {
+			fmt.Println("ERROR:", errReply)
+			return errReply
 		}
 	}
-	return nil
 }
