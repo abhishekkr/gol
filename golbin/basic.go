@@ -1,11 +1,14 @@
 package golbin
 
 import (
-  "strings"
+	"strings"
 )
 
-func Uptime() string{
-  kon := Console{Command: "uptime"}
-  kon.Run()
-  return strings.Fields(kon.StdOutput)[0]
+/*
+Uptime proxies linux system command for 'uptime'.
+*/
+func Uptime() string {
+	kon := Console{Command: "uptime"}
+	kon.Run()
+	return strings.Fields(kon.StdOutput)[0]
 }
