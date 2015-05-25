@@ -43,6 +43,7 @@ func main() {
 /****/
 func exec(command string) string {
 	kon := golbin.Console{Command: command}
+	fmt.Println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
 	kon.Run()
 	fmt.Println(kon)
 
@@ -50,7 +51,9 @@ func exec(command string) string {
 }
 
 func handleSystem(res http.ResponseWriter, req *http.Request) {
-	_output := exec("ls -lah")
+	req.ParseForm()
+	_command := req.FormValue("command")
+	_output := exec(_command)
 
 	data, _ := json.Marshal(fmt.Sprintf("{\"command\":	\"%s\"}", _output))
 	res.Header().Set("Content-Type", "application/json; charset=utf-8")

@@ -20,6 +20,9 @@ startCommand runs passed command string and returns it.
 func startCommand(sysCommand string) *exec.Cmd {
 	cmdTokens := strings.Split(sysCommand, " ")
 	cmd := cmdTokens[0]
+	if len(cmdTokens) == 1 {
+		return exec.Command(cmd)
+	}
 	return exec.Command(cmd, strings.Join(cmdTokens[1:], " "))
 }
 
