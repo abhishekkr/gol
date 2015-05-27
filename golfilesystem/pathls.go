@@ -10,15 +10,17 @@ import (
 
 /*
 PathLs returns a sort-of-linear representational mapping of directory to its entries.
-It need to be provided path and returns mapping like following example.
+It need to be provided path like following:
 {
 	"/a": ["/a/b"],
 	"/a/b": ["/a/b/c", "/a/b/cc", "/a/b/ccc"],
 	"/a/b/c": [],
 	"/a/b/ccc": ["/a/b/ccc/d"],
 }
+it returns somethine like
+["/a/b", "/a/b", "/a/b/cc", "/a/b/ccc/d"]
 */
-func PathLs(basePath string) (map[string]map[int]string, error) {
+func PathLs(basePath string) (map[int]string, error) {
 	return doPathWalk(basePath, -1, []string{}, false)
 }
 
@@ -27,7 +29,7 @@ PathLsN is variety of PathLs function where the depth of traversal can be limite
 It need to be provided path and depth to which traversal is required.
 Depth can be passed -1 if need to not limit. But use PathLs instead then.
 */
-func PathLsN(basePath string, depth int) (map[string]map[int]string, error) {
+func PathLsN(basePath string, depth int) (map[int]string, error) {
 	return doPathWalk(basePath, depth, []string{}, false)
 }
 
@@ -35,14 +37,14 @@ func PathLsN(basePath string, depth int) (map[string]map[int]string, error) {
 PathLsType is variety of PathLs function where filetype looked for can be limited to a list.
 The filetype list could look like [".mp4", ".avi"]
 */
-func PathLsType(basePath string, filetypes []string) (map[string]map[int]string, error) {
+func PathLsType(basePath string, filetypes []string) (map[int]string, error) {
 	return doPathWalk(basePath, -1, filetypes, true)
 }
 
 /*
 PathLsNType is variety of PathLsN function where filetype looked for can be limited to a list.
 */
-func PathLsNType(basePath string, depth int, filetypes []string) (map[string]map[int]string, error) {
+func PathLsNType(basePath string, depth int, filetypes []string) (map[int]string, error) {
 	return doPathWalk(basePath, depth, filetypes, true)
 }
 
@@ -50,22 +52,22 @@ func PathLsNType(basePath string, depth int, filetypes []string) (map[string]map
 PathLsTypeNot is variety of PathLs function where filetype looked for can be limited to a list.
 The filetype list could look like [".mp4", ".avi"]
 */
-func PathLsTypeNot(basePath string, filetypes []string) (map[string]map[int]string, error) {
+func PathLsTypeNot(basePath string, filetypes []string) (map[int]string, error) {
 	return doPathWalk(basePath, -1, filetypes, false)
 }
 
 /*
 PathLsNTypeNot is variety of PathLsN function where filetype looked for can be limited to a list.
 */
-func PathLsNTypeNot(basePath string, depth int, filetypes []string) (map[string]map[int]string, error) {
+func PathLsNTypeNot(basePath string, depth int, filetypes []string) (map[int]string, error) {
 	return doPathWalk(basePath, depth, filetypes, false)
 }
 
 /*
 doPathWalk is base core engine for varied exposed features by PathLs.* functions.
 */
-func doPathWalk(dirPath string, recurseDepth int, filetypes []string, filetypeBool bool) (map[string]map[int]string, error) {
-	var pathMap = make(map[string]map[int]string)
+func doPathWalk(dirPath string, recurseDepth int, filetypes []string, filetypeBool bool) (map[int]string, error) {
+	var pathMap = make(map[int]string)
 	fullPath, err := filepath.Abs(dirPath)
 	if err != nil {
 		return pathMap, err
@@ -86,7 +88,7 @@ func doPathWalk(dirPath string, recurseDepth int, filetypes []string, filetypeBo
 /*
 walkFile gets called on all entries of filepath.Walk, it populates inferred pathMap for a cumulative result.
 */
-func walkFile(root string, path string, fi os.FileInfo, err error, recurseDepth int, filetypes []string, filetypeBool bool, pathMap *map[string]map[int]string) error {
+func walkFile(root string, path string, fi os.FileInfo, err error, recurseDepth int, filetypes []string, filetypeBool bool, pathMap *map[int]string) error {
 	if fi.IsDir() {
 		return nil
 	}
@@ -98,10 +100,7 @@ func walkFile(root string, path string, fi os.FileInfo, err error, recurseDepth 
 	}
 
 	if isMedia(filepath.Ext(path), filetypes) == filetypeBool {
-		if len((*pathMap)[root]) == 0 {
-			(*pathMap)[root] = make(map[int]string)
-		}
-		(*pathMap)[root][len((*pathMap)[root])] = path
+		(*pathMap)[len(*pathMap)] = path
 	}
 	return nil
 }

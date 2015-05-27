@@ -45,10 +45,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if pathMap[basePath][0] != fmt.Sprintf("%s/gol.log", basePath) {
+	if pathMap[0] != fmt.Sprintf("%s/gol.log", basePath) {
 		panic(fmt.Sprintf("PathLs panic for gol.log!\n%q\n", pathMap))
 	}
-	if pathMap[basePath][1] != fmt.Sprintf("%s/test-again/again.txt", basePath) {
+	if pathMap[1] != fmt.Sprintf("%s/test-again/again.txt", basePath) {
 		panic(fmt.Sprintf("PathLs panic for again.txt!\n%q\n", pathMap))
 	}
 
@@ -56,10 +56,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if pathMap[basePath][0] != fmt.Sprintf("%s/gol.log", basePath) {
+	if pathMap[0] != fmt.Sprintf("%s/gol.log", basePath) {
 		panic(fmt.Sprintf("PathLsN panic for gol.log!\n%q\n", pathMap))
 	}
-	if len(pathMap[basePath]) == 2 {
+	if len(pathMap) == 2 {
 		panic(fmt.Sprintf("PathLsN panic for again.txt!\n%q\n", pathMap))
 	}
 
@@ -67,10 +67,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if len(pathMap[basePath]) == 2 {
+	if len(pathMap) == 2 {
 		panic(fmt.Sprintf("PathLsType panic for gol.log!\n%q\n", pathMap))
 	}
-	if pathMap[basePath][0] != fmt.Sprintf("%s/test-again/again.txt", basePath) {
+	if pathMap[0] != fmt.Sprintf("%s/test-again/again.txt", basePath) {
 		panic(fmt.Sprintf("PathLsType panic for again.txt!\n%q\n", pathMap))
 	}
 
@@ -78,10 +78,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if pathMap[basePath][0] != fmt.Sprintf("%s/gol.log", basePath) {
+	if pathMap[0] != fmt.Sprintf("%s/gol.log", basePath) {
 		panic(fmt.Sprintf("PathLsNType panic for gol.log!\n%q\n", pathMap))
 	}
-	if len(pathMap[basePath]) == 2 {
+	if len(pathMap) == 2 {
 		panic(fmt.Sprintf("PathLsNType panic for again.txt!\n%q\n", pathMap))
 	}
 
@@ -89,7 +89,7 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if len(pathMap[basePath]) == 0 {
+	if len(pathMap) == 0 {
 		panic(fmt.Sprintf("PathLsTypeNot panic for again.txt!\n%q\n", pathMap))
 	}
 
@@ -97,9 +97,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: PathWalk failed for '%s'", err.Error()))
 	}
-	if len(pathMap[basePath]) == 0 {
+	if len(pathMap) == 0 {
 		panic(fmt.Sprintf("PathLsNTypeNot panic for again.txt!\n%q\n", pathMap))
 	}
 
 	cleanFS(basePath)
+	fmt.Println("Panic not.")
 }
