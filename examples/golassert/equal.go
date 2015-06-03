@@ -7,7 +7,7 @@ import (
 	golassert "github.com/abhishekkr/gol/golassert"
 )
 
-func Recover(msg string) {
+func recoverTestPanic(msg string) {
 	if r := recover(); r != nil {
 		fmt.Printf("Passed PANIC for: %s With:\n%v\n\n", msg, r)
 	} else {
@@ -19,7 +19,7 @@ func equalNil() {
 	_, err := strconv.Atoi("1")
 	golassert.AssertEqual(err, nil)
 
-	defer Recover("equalNil")
+	defer recoverTestPanic("equalNil")
 	golassert.AssertEqual(1, nil)
 }
 
@@ -28,14 +28,14 @@ func equalError() {
 	_, err02 := strconv.Atoi("A")
 	golassert.AssertEqual(err01.Error(), err02.Error())
 
-	defer Recover("equalError")
+	defer recoverTestPanic("equalError")
 	golassert.AssertEqual(err01, nil)
 }
 
 func equalType() {
 	golassert.AssertType(1, 1)
 
-	defer Recover("equalType")
+	defer recoverTestPanic("equalType")
 	golassert.AssertEqual(1, "1")
 	golassert.AssertType(1, "1")
 }
@@ -43,14 +43,14 @@ func equalType() {
 func equalString() {
 	golassert.AssertEqual("1", "1")
 
-	defer Recover("equalString")
+	defer recoverTestPanic("equalString")
 	golassert.AssertEqual("1", "2")
 }
 
 func equalNumber() {
 	golassert.AssertEqual(1, 1)
 
-	defer Recover("equalNumber")
+	defer recoverTestPanic("equalNumber")
 	golassert.AssertEqual(1, 2)
 }
 
@@ -62,7 +62,7 @@ func equalStringArray() {
 	golassert.AssertEqualStringArray(var1, var2)
 	golassert.AssertEqualStringArray(var1, var4)
 
-	defer Recover("equalStringArray")
+	defer recoverTestPanic("equalStringArray")
 	golassert.AssertEqualStringArray(var1, var3)
 }
 
