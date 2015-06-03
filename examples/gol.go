@@ -7,11 +7,11 @@ import (
 	"github.com/abhishekkr/gol"
 )
 
-func wait_n_shout() {
+func waitNShout() {
 	fmt.Println("Gol")
 	time.Sleep(1 * time.Second)
 }
 
 func main() {
-	gol.Gol(wait_n_shout)
+	gol.Gol(waitNShout)
 }

@@ -9,7 +9,7 @@ import (
 
 func Recover(msg string) {
 	if r := recover(); r != nil {
-		fmt.Printf("Passed PANICK for: %s With:\n%v\n\n", msg, r)
+		fmt.Printf("Passed PANIC for: %s With:\n%v\n\n", msg, r)
 	} else {
 		panic(fmt.Sprintf("Didn't panic where supposed to at %s", msg))
 	}
@@ -54,10 +54,23 @@ func equalNumber() {
 	golassert.AssertEqual(1, 2)
 }
 
+func equalStringArray() {
+	var1 := []string{"a", "b"}
+	var2 := []string{"b", "a"}
+	var3 := []string{"b", "c"}
+	var4 := []string{"a", "b"}
+	golassert.AssertEqualStringArray(var1, var2)
+	golassert.AssertEqualStringArray(var1, var4)
+
+	defer Recover("equalStringArray")
+	golassert.AssertEqualStringArray(var1, var3)
+}
+
 func main() {
 	equalNil()
 	equalError()
 	equalType()
 	equalString()
 	equalNumber()
+	equalStringArray()
 }
