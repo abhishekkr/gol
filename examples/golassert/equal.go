@@ -54,6 +54,14 @@ func equalNumber() {
 	golassert.AssertEqual(1, 2)
 }
 
+func equalBool() {
+	golassert.AssertEqual(true, true)
+	golassert.AssertEqual(false, false)
+
+	defer recoverTestPanic("equalBool")
+	golassert.AssertEqual(true, false)
+}
+
 func equalStringArray() {
 	var1 := []string{"a", "b"}
 	var2 := []string{"b", "a"}
@@ -72,5 +80,6 @@ func main() {
 	equalType()
 	equalString()
 	equalNumber()
+	equalBool()
 	equalStringArray()
 }
