@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	golassert "github.com/abhishekkr/gol/golassert"
 	golhashmap "github.com/abhishekkr/gol/golhashmap"
 )
 
@@ -28,6 +29,31 @@ func compare_map(map1 golhashmap.HashMap, map2 golhashmap.HashMap) bool {
 		}
 	}
 	return true
+}
+
+func TestHashMapKeys() {
+	expected := []string{"Bob", "Eve"}
+	golassert.AssertEqualStringArray(expected, hashmap.Keys())
+}
+
+func TestHashMapValues() {
+	expected := []string{"Alice", "Trudy"}
+	golassert.AssertEqualStringArray(expected, hashmap.Values())
+}
+
+func TestHashMapItems() {
+	expected := [][]string{[]string{"Bob", "Alice"}, []string{"Eve", "Trudy"}}
+	items := hashmap.Items()
+	golassert.AssertEqualStringArray(expected[0], items[0])
+	golassert.AssertEqualStringArray(expected[1], items[1])
+	if len(expected) != len(items) {
+		panic("Items length need to be same as expected.")
+	}
+}
+
+func TestHashMapCount() {
+	expected := len(hashmap)
+	golassert.AssertEqual(expected, hashmap.Count())
 }
 
 func TestCSVMap() {
@@ -70,5 +96,9 @@ func TestJSONMap() {
 func main() {
 	TestCSVMap()
 	TestJSONMap()
+	TestHashMapKeys()
+	TestHashMapValues()
+	TestHashMapItems()
+	TestHashMapCount()
 	fmt.Println("pass not panic")
 }
