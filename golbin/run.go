@@ -3,6 +3,7 @@ package golbin
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -12,6 +13,7 @@ Console is structure to contain Command Line, Input and Output.
 */
 type Console struct {
 	Command, StdInput, StdOutput string
+	Process                      *os.Process
 }
 
 /*
@@ -35,6 +37,7 @@ func (konsole *Console) Run() {
 	if konsole.StdInput != "" {
 		cmd.Stdin = strings.NewReader(konsole.StdInput)
 	}
+	konsole.Process = cmd.Process
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
