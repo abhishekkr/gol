@@ -1,10 +1,43 @@
 package gollog
 
+/*
+grow with reference from:
+
+http://www.goinggo.net/2013/11/using-log-package-in-go.html
+
+http://golang.org/pkg/log/
+https://golang.org/pkg/log/syslog/
+https://github.com/op/go-logging
+https://github.com/Sirupsen/logrus
+
+*/
+
 import (
 	"fmt"
 	"io"
 	"os"
 )
+
+/*
+Log to declare different streams to manage log
+
+logInfo := gollog.Log{Level: "info", Thread: make(chan string)}
+go logInfo.LogIt()
+
+logInfo.Thread <- fmt.Sprintf("Message Recieved: %s", string(msg))
+*/
+type Log struct {
+	Level  string
+	Thread chan string
+}
+
+// start Log Action
+func (l Log) Start() {
+	for {
+		msg := <-(l.Thread)
+		fmt.Printf("[%s] %s", l.Level, msg)
+	}
+}
 
 // Logfile sends back handle of opened logfile, remember to defer F.Close() at usage.
 func OpenLogFile(logFile string) *os.File {
