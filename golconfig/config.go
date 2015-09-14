@@ -1,16 +1,31 @@
 package golconfig
 
-type Config interface {
-	Config(config_data string, config interface{})
-	ConfigFromFile(config_path string, config interface{})
+/*FlatConfig can be used seamlessly between varied projects to share flatmap details around configuration.*/
+type FlatConfig map[string]string
+
+/*
+Configurator enables provide config adapters for serializer.
+*/
+type Configurator interface {
+	Unmarshal(configData string, config interface{})
+	ConfigFromFile(configPath string, config interface{})
 }
 
-var ConfigList = make(map[string]Config)
+/*
+ConfiguratorList containes reference to all config adapters to be fetched for usage.
+*/
+var ConfiguratorList = make(map[string]Configurator)
 
-func RegisterConfig(name string, configType Config) {
-	ConfigList[name] = configType
+/*
+RegisterConfigurator enables new (de)-serializing adapters to plug-in their reference.
+*/
+func RegisterConfigurator(name string, configType Configurator) {
+	ConfiguratorList[name] = configType
 }
 
-func GetConfig(name string) Config {
-	return ConfigList[name]
+/*
+GetConfigurator lets client of this library fetch required adapter.
+*/
+func GetConfigurator(name string) Configurator {
+	return ConfiguratorList[name]
 }
