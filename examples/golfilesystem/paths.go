@@ -8,12 +8,12 @@ import (
 
 func main() {
 	exists := "."
-	exists_not := "..."
+	existsNot := "..."
 	if !golfilesystem.PathExists(exists) {
 		panic(fmt.Sprintf("%s does exists!", exists))
 	}
-	if golfilesystem.PathExists(exists_not) {
-		panic(fmt.Sprintf("%s doesn't exist!", exists_not))
+	if golfilesystem.PathExists(existsNot) {
+		panic(fmt.Sprintf("%s doesn't exist!", existsNot))
 	}
 	fmt.Println("No need to panic.")
 }
