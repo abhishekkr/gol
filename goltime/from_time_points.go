@@ -3,12 +3,35 @@ package goltime
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
 // the currency for goltime
 type Timestamp struct {
-	Year, Month, Day, Hour, Min, Sec int
+	Year, Month, Day, Hour, Min, Sec, MilliSec, MicroSec, NanoSec, PicoSec int
+}
+
+// getting value for second fragments from second value
+func secondFragments(second string) (sec, milliSec, microSec, nanoSec, picoSec int) {
+	fragments := strings.Split(abc, ".")
+
+	if len(fragments) > 0 {
+		sec, _ = strconv.Atoi(fragments[0])
+	}
+	if len(fragments) > 1 {
+		milliSec, _ = strconv.Atoi(fragments[1])
+	}
+	if len(fragments) > 2 {
+		microSec, _ = strconv.Atoi(fragments[2])
+	}
+	if len(fragments) > 3 {
+		nanoSec, _ = strconv.Atoi(fragments[3])
+	}
+	if len(fragments) > 4 {
+		picoSec, _ = strconv.Atoi(fragments[4])
+	}
+	return
 }
 
 // creating Timestamp struct from string array of counts [Y M D h m s]
@@ -18,15 +41,19 @@ func CreateTimestamp(time_point []string) Timestamp {
 	day, _ := strconv.Atoi(time_point[2])
 	hour, _ := strconv.Atoi(time_point[3])
 	min, _ := strconv.Atoi(time_point[4])
-	sec, _ := strconv.Atoi(time_point[5])
+	sec, milliSec, mircoSec, nanoSec, picoSec := secondFragments(time_point[5])
 
 	return Timestamp{
-		Year:  year,
-		Month: month,
-		Day:   day,
-		Hour:  hour,
-		Min:   min,
-		Sec:   sec,
+		Year:     year,
+		Month:    month,
+		Day:      day,
+		Hour:     hour,
+		Min:      min,
+		Sec:      sec,
+		MilliSec: milliSec,
+		MicroSec: microSec,
+		NanoSec:  nanoSec,
+		PicoSec:  picoSec,
 	}
 }
 
@@ -44,7 +71,7 @@ func TimestampFromHTTPRequest(req *http.Request) Timestamp {
 // create time.Time from a Timestamp struct
 func (timestamp *Timestamp) Time() time.Time {
 	return time.Date(timestamp.Year, time.Month(timestamp.Month), timestamp.Day,
-		timestamp.Hour, timestamp.Min, timestamp.Sec, 0, time.UTC)
+		timestamp.Hour, timestamp.Min, timestamp.Sec, timestamp.MilliSec, time.UTC)
 }
 
 // create Timestamp struct from time.Now
@@ -54,11 +81,15 @@ func TimestampNow() Timestamp {
 	year, month, day = time.Now().Date()
 	hour, min, sec = time.Now().Clock()
 	return Timestamp{
-		Year:  year,
-		Month: int(month),
-		Day:   day,
-		Hour:  hour,
-		Min:   min,
-		Sec:   sec,
+		Year:     year,
+		Month:    int(month),
+		Day:      day,
+		Hour:     hour,
+		Min:      min,
+		Sec:      sec,
+		MilliSec: 0,
+		MicroSec: 0,
+		NanoSec:  0,
+		PicoSec:  0,
 	}
 }
