@@ -14,7 +14,7 @@ type Timestamp struct {
 
 // getting value for second fragments from second value
 func secondFragments(second string) (sec, milliSec, microSec, nanoSec, picoSec int) {
-	fragments := strings.Split(abc, ".")
+	fragments := strings.Split(second, ".")
 
 	if len(fragments) > 0 {
 		sec, _ = strconv.Atoi(fragments[0])
@@ -41,7 +41,7 @@ func CreateTimestamp(time_point []string) Timestamp {
 	day, _ := strconv.Atoi(time_point[2])
 	hour, _ := strconv.Atoi(time_point[3])
 	min, _ := strconv.Atoi(time_point[4])
-	sec, milliSec, mircoSec, nanoSec, picoSec := secondFragments(time_point[5])
+	sec, milliSec, microSec, nanoSec, picoSec := secondFragments(time_point[5])
 
 	return Timestamp{
 		Year:     year,
