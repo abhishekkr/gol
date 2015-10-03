@@ -71,7 +71,7 @@ func TimestampFromHTTPRequest(req *http.Request) Timestamp {
 // create time.Time from a Timestamp struct
 func (timestamp *Timestamp) Time() time.Time {
 	return time.Date(timestamp.Year, time.Month(timestamp.Month), timestamp.Day,
-		timestamp.Hour, timestamp.Min, timestamp.Sec, timestamp.MilliSec, time.UTC)
+		timestamp.Hour, timestamp.Min, timestamp.Sec, timestamp.NanoSec, time.UTC)
 }
 
 // create Timestamp struct from time.Now
