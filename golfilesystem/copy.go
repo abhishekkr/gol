@@ -3,16 +3,37 @@ package golfilesystem
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"path"
 )
+
+/*
+MkDir to make dir if not there already.
+*/
+func MkDir(dirpath string) error {
+	fmt.Println("to create", dirpath)
+	if PathExists(dirpath) {
+		return nil
+	}
+
+	err := os.MkdirAll(dirpath, 0755)
+	if err != nil {
+		log.Println("Error creating directory")
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
 
 /*
 CopyFile from src to dst
 */
-func CopyFile(src, dst string) (err error) {
+func CopyFile(src, dst string) error {
 	sfi, err := os.Stat(src)
 	if err != nil {
-		return
+		return err
 	}
 	if !sfi.Mode().IsRegular() {
 		// cannot copy non-regular files (e.g., directories,
@@ -22,21 +43,25 @@ func CopyFile(src, dst string) (err error) {
 	dfi, err := os.Stat(dst)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return
+			return err
 		}
 	} else {
 		if !(dfi.Mode().IsRegular()) {
 			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
 		}
 		if os.SameFile(sfi, dfi) {
-			return
+			return nil
 		}
 	}
 	if err = os.Link(src, dst); err == nil {
-		return
+		return nil
+	}
+
+	if err = MkDir(path.Dir(dst)); err != nil {
+		return err
 	}
 	err = copyFileContents(src, dst)
-	return
+	return err
 }
 
 /*

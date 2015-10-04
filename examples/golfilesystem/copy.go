@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	golfilesystem "github.com/abhishekkr/gol/golfilesystem"
+	//golfilesystem "github.com/abhishekkr/gol/golfilesystem"
+	golfilesystem "../../golfilesystem"
 )
 
 var (
@@ -14,6 +15,9 @@ var (
 
 func main() {
 	flag.Parse()
-	golfilesystem.CopyFile(*fileSource, *fileDestination)
-	fmt.Println("Copied", *fileSource, "to", *fileDestination, ".")
+	if err := golfilesystem.CopyFile(*fileSource, *fileDestination); err != nil {
+		fmt.Println("ERROR:", err)
+	} else {
+		fmt.Println("Copied", *fileSource, "to", *fileDestination, ".")
+	}
 }
