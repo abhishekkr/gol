@@ -12,7 +12,6 @@ import (
 MkDir to make dir if not there already.
 */
 func MkDir(dirpath string) error {
-	fmt.Println("to create", dirpath)
 	if PathExists(dirpath) {
 		return nil
 	}

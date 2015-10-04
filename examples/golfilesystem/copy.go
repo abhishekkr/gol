@@ -4,8 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	//golfilesystem "github.com/abhishekkr/gol/golfilesystem"
-	golfilesystem "../../golfilesystem"
+	golfilesystem "github.com/abhishekkr/gol/golfilesystem"
 )
 
 var (
