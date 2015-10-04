@@ -59,7 +59,7 @@ func CopyFile(src, dst string) error {
 	if err = MkDir(path.Dir(dst)); err != nil {
 		return err
 	}
-	err = copyFileContents(src, dst)
+	err = copyFileContents(src, dst, sfi.Mode())
 	return err
 }
 
@@ -69,13 +69,14 @@ by dst. The file will be created if it does not already exist. If the
 destination file exists, all it's contents will be replaced by the contents
 of the source file.
 */
-func copyFileContents(src, dst string) (err error) {
+func copyFileContents(src string, dst string, srcMode os.FileMode) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
 		return
 	}
 	defer in.Close()
 	out, err := os.Create(dst)
+	out.Chmod(srcMode)
 	if err != nil {
 		return
 	}
