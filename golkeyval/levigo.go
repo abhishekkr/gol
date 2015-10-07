@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/syndtr/goleveldb/leveldb/filter"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	leveldb "github.com/syndtr/leveldb/leveldb"
+	levigo "github.com/jmhodges/levigo"
 
 	golerror "github.com/abhishekkr/gol/golerror"
 )
@@ -16,14 +14,14 @@ LevelDB struct with required leveldb details.
 */
 type LevelDB struct {
 	DBPath string
-	GolDB  *leveldb.DB
+	GolDB  *levigo.DB
 }
 
 /*
-init registers leveldb (GO implemented LevelDB) to DBEngines.
+init registers levigo (C API-d LevelDB lib) to DBEngines.
 */
 func init() {
-	RegisterDBEngine("leveldb", new(LevelDB))
+	RegisterDBEngine("levigo", new(LevelDB))
 }
 
 /*
@@ -38,11 +36,10 @@ CreateDB creates a leveldb db at provided DBPath.
 */
 func (levelDB *LevelDB) CreateDB() {
 	var errDB error
-	opts := &opt.Options{
-		Filter: filter.NewBloomFilter(10),
-	}
-
-	levelDB.GolDB, errDB = leveldb.OpenFile(levelDB.DBPath, &opts)
+	opts := levigo.NewOptions()
+	opts.SetCache(levigo.NewLRUCache(1 << 10))
+	opts.SetCreateIfMissing(true)
+	levelDB.GolDB, errDB = levigo.Open(levelDB.DBPath, opts)
 	if errDB != nil {
 		errMsg := fmt.Sprintf("DB %s Creation failed. %q", levelDB.DBPath, errDB)
 		golerror.Boohoo(errMsg, true)
@@ -71,7 +68,12 @@ func (levelDB *LevelDB) CloseAndDeleteDB() {
 PushKeyVal pushes key-val in provided DB handle.
 */
 func (levelDB *LevelDB) PushKeyVal(key string, val string) bool {
-	err := levelDB.GolDB.Put([]byte(key), []byte(val), nil)
+	writer := levigo.NewWriteOptions()
+	defer writer.Close()
+
+	keyname := []byte(key)
+	value := []byte(val)
+	err := levelDB.GolDB.Put(writer, keyname, value)
 	if err != nil {
 		golerror.Boohoo("Key "+key+" insertion failed. It's value was "+val, false)
 		return false
@@ -83,7 +85,10 @@ func (levelDB *LevelDB) PushKeyVal(key string, val string) bool {
 GetVal return string-ified value of key from provided db handle.
 */
 func (levelDB *LevelDB) GetVal(key string) string {
-	data, err := levelDB.GolDB.Get([]byte(key), nil)
+	reader := levigo.NewReadOptions()
+	defer reader.Close()
+
+	data, err := levelDB.GolDB.Get(reader, []byte(key))
 	if err != nil {
 		golerror.Boohoo("Key "+key+" query failed.", false)
 		return ""
@@ -95,7 +100,10 @@ func (levelDB *LevelDB) GetVal(key string) string {
 DelKey deletes key from provided DB handle.
 */
 func (levelDB *LevelDB) DelKey(key string) bool {
-	err := levelDB.GolDB.Delete([]byte(key), nil)
+	writer := levigo.NewWriteOptions()
+	defer writer.Close()
+
+	err := levelDB.GolDB.Delete(writer, []byte(key))
 	if err != nil {
 		golerror.Boohoo("Key "+key+" query failed.", false)
 		return false
