@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	leveldb "github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/filter"
 	"github.com/syndtr/goleveldb/leveldb/opt"
-	leveldb "github.com/syndtr/leveldb/leveldb"
 
 	golerror "github.com/abhishekkr/gol/golerror"
 )
