@@ -42,7 +42,7 @@ func (levelDB *LevelDB) CreateDB() {
 		Filter: filter.NewBloomFilter(10),
 	}
 
-	levelDB.GolDB, errDB = leveldb.OpenFile(levelDB.DBPath, &opts)
+	levelDB.GolDB, errDB = leveldb.OpenFile(levelDB.DBPath, opts)
 	if errDB != nil {
 		errMsg := fmt.Sprintf("DB %s Creation failed. %q", levelDB.DBPath, errDB)
 		golerror.Boohoo(errMsg, true)

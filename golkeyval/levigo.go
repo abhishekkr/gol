@@ -10,31 +10,31 @@ import (
 )
 
 /*
-LevelDB struct with required leveldb details.
+Levigo struct with required leveldb details.
 */
-type LevelDB struct {
+type Levigo struct {
 	DBPath string
 	GolDB  *levigo.DB
 }
 
 /*
-init registers levigo (C API-d LevelDB lib) to DBEngines.
+init registers levigo (C API-d Levigo lib) to DBEngines.
 */
 func init() {
-	RegisterDBEngine("levigo", new(LevelDB))
+	RegisterDBEngine("levigo", new(Levigo))
 }
 
 /*
-Configure populates LevelDB required configs.
+Configure populates Levigo required configs.
 */
-func (levelDB *LevelDB) Configure(cfg map[string]string) {
+func (levelDB *Levigo) Configure(cfg map[string]string) {
 	levelDB.DBPath = cfg["DBPath"]
 }
 
 /*
 CreateDB creates a leveldb db at provided DBPath.
 */
-func (levelDB *LevelDB) CreateDB() {
+func (levelDB *Levigo) CreateDB() {
 	var errDB error
 	opts := levigo.NewOptions()
 	opts.SetCache(levigo.NewLRUCache(1 << 10))
@@ -49,7 +49,7 @@ func (levelDB *LevelDB) CreateDB() {
 /*
 CloseDB closes a db given handle.
 */
-func (levelDB *LevelDB) CloseDB() {
+func (levelDB *Levigo) CloseDB() {
 	levelDB.GolDB.Close()
 }
 
@@ -57,7 +57,7 @@ func (levelDB *LevelDB) CloseDB() {
 CloseAndDeleteDB closes and deletes a db given handle and DBPath.
 Useful in use and throw implementations. And also tests.
 */
-func (levelDB *LevelDB) CloseAndDeleteDB() {
+func (levelDB *Levigo) CloseAndDeleteDB() {
 	levelDB.CloseDB()
 	if os.RemoveAll(levelDB.DBPath) != nil {
 		panic("Fail: Temporary DB files are still present at: " + levelDB.DBPath)
@@ -67,7 +67,7 @@ func (levelDB *LevelDB) CloseAndDeleteDB() {
 /*
 PushKeyVal pushes key-val in provided DB handle.
 */
-func (levelDB *LevelDB) PushKeyVal(key string, val string) bool {
+func (levelDB *Levigo) PushKeyVal(key string, val string) bool {
 	writer := levigo.NewWriteOptions()
 	defer writer.Close()
 
@@ -84,7 +84,7 @@ func (levelDB *LevelDB) PushKeyVal(key string, val string) bool {
 /*
 GetVal return string-ified value of key from provided db handle.
 */
-func (levelDB *LevelDB) GetVal(key string) string {
+func (levelDB *Levigo) GetVal(key string) string {
 	reader := levigo.NewReadOptions()
 	defer reader.Close()
 
@@ -99,7 +99,7 @@ func (levelDB *LevelDB) GetVal(key string) string {
 /*
 DelKey deletes key from provided DB handle.
 */
-func (levelDB *LevelDB) DelKey(key string) bool {
+func (levelDB *Levigo) DelKey(key string) bool {
 	writer := levigo.NewWriteOptions()
 	defer writer.Close()
 
