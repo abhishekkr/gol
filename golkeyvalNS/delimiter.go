@@ -320,3 +320,15 @@ func (delimited *Delimited) DeleteNSRecursive(key string) bool {
 	}
 	return false
 }
+
+/** golkeyvalNS PROXY FUNC **/
+
+func (delimited *Delimited) PushKeyVal(key string, val string) bool {
+	return delimited.db.PushKeyVal(key, val)
+}
+func (delimited *Delimited) GetVal(key string) string {
+	return delimited.db.GetVal(key)
+}
+func (delimited *Delimited) DelKey(key string) bool {
+	return delimited.db.DelKey(key)
+}

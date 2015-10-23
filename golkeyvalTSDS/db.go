@@ -16,6 +16,15 @@ type TSDSDBEngine interface {
 	PushNowTSDS(key string, val string) bool
 	ReadTSDS(key string) golhashmap.HashMap
 	DeleteTSDS(key string) bool
+
+	// golkeyval proxy func
+	PushNS(key string, val string) bool
+	ReadNSRecursive(key string) golhashmap.HashMap
+	DeleteNSRecursive(key string) bool
+
+	PushKeyVal(key string, val string) bool
+	GetVal(key string) string
+	DelKey(key string) bool
 }
 
 /*
@@ -35,4 +44,20 @@ GetDBEngine gets used by client to fetch a required db-engine.
 */
 func GetTSDSDBEngine(name string) TSDSDBEngine {
 	return TSDSDBEngines[name]
+}
+
+/*
+GetDBEngine gets used by client to fetch a 'namespace' db-engine.
+*/
+func GetNamespaceEngine(dbEngine, nsEngine string) TSDSDBEngine {
+	db := golkeyval.GetDBEngine(dbEngine)
+	tsdb.Configure(config)
+	db.CreateDB()
+
+	ns := golkeyvalNS.GetNSDBEngine(nsEngine)
+	ns.Configure(db)
+
+	tsds = GetTSDSDBEngine("namespace")
+	tsds.Configure(ns)
+	return tsds
 }

@@ -154,6 +154,29 @@ func testDeleteNSRecursive(ns golkeyvalNS.NSDBEngine, db golkeyval.DBEngine) {
 	fmt.Println("No panic for DeleteNSRecursive.")
 }
 
+func testPushKeyVal(ns golkeyvalNS.NSDBEngine, db golkeyval.DBEngine) {
+	fmt.Println("++++++++++++++++++++++++++++++++\ntest PushKeyVal~")
+	key, expect := "golkeyval", "leveldb"
+	ns.PushKeyVal(key, expect)
+	val := db.GetVal(key)
+	golassert.AssertEqual(val, expect)
+}
+func testGetVal(ns golkeyvalNS.NSDBEngine, db golkeyval.DBEngine) {
+	fmt.Println("++++++++++++++++++++++++++++++++\ntest GetVal~")
+	key, expect := "golkeyval", "leveldb"
+	db.PushKeyVal(key, expect)
+	val := ns.GetVal(key)
+	golassert.AssertEqual(val, expect)
+}
+func testDelKey(ns golkeyvalNS.NSDBEngine, db golkeyval.DBEngine) {
+	fmt.Println("++++++++++++++++++++++++++++++++\ntest DelKey~")
+	key, expect := "golkeyval", "leveldb"
+	db.PushKeyVal(key, expect)
+	golassert.AssertEqual(ns.DelKey(key), true)
+	val := ns.GetVal(key)
+	golassert.AssertEqual(val, "")
+}
+
 func main() {
 	flag.Parse()
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -174,6 +197,10 @@ func main() {
 	testReadNSRecursive(ns, db)
 	testDeleteNS(ns, db)
 	testDeleteNSRecursive(ns, db)
+
+	testPushKeyVal(ns, db)
+	testGetVal(ns, db)
+	testDelKey(ns, db)
 
 	os.Remove(*dbpath)
 }

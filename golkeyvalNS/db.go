@@ -16,6 +16,10 @@ type NSDBEngine interface {
 	DeleteNSKey(key string) bool
 	DeleteNS(key string) bool
 	DeleteNSRecursive(key string) bool
+	// golkeyval proxy func
+	PushKeyVal(key string, val string) bool
+	GetVal(key string) string
+	DelKey(key string) bool
 }
 
 /*

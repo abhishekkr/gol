@@ -125,3 +125,25 @@ The desried Time-frame shall be as namespace-d key
 func (namespace *Namespace) DeleteTSDS(key string) bool {
 	return namespace.ns.DeleteNSRecursive(key)
 }
+
+/** golkeyvalNS PROXY FUNC **/
+
+func (namespace *Namespace) PushNS(key string, val string) bool {
+	return namespace.ns.PushNS(key, val)
+}
+func (namespace *Namespace) ReadNSRecursive(key string) golhashmap.HashMap {
+	return namespace.ns.ReadNSRecursive(key)
+}
+func (namespace *Namespace) DeleteNSRecursive(key string) bool {
+	return namespace.ns.DeleteNSRecursive(key)
+}
+
+func (namespace *Namespace) PushKeyVal(key string, val string) bool {
+	return namespace.ns.PushKeyVal(key, val)
+}
+func (namespace *Namespace) GetVal(key string) string {
+	return namespace.ns.GetVal(key)
+}
+func (namespace *Namespace) DelKey(key string) bool {
+	return namespace.ns.DelKey(key)
+}
