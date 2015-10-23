@@ -45,19 +45,3 @@ GetDBEngine gets used by client to fetch a required db-engine.
 func GetTSDSDBEngine(name string) TSDSDBEngine {
 	return TSDSDBEngines[name]
 }
-
-/*
-GetDBEngine gets used by client to fetch a 'namespace' db-engine.
-*/
-func GetNamespaceEngine(dbEngine, nsEngine string) TSDSDBEngine {
-	db := golkeyval.GetDBEngine(dbEngine)
-	tsdb.Configure(config)
-	db.CreateDB()
-
-	ns := golkeyvalNS.GetNSDBEngine(nsEngine)
-	ns.Configure(db)
-
-	tsds = GetTSDSDBEngine("namespace")
-	tsds.Configure(ns)
-	return tsds
-}
