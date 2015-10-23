@@ -4,6 +4,7 @@ import (
 	"time"
 
 	golhashmap "github.com/abhishekkr/gol/golhashmap"
+	golkeyval "github.com/abhishekkr/gol/golkeyval"
 	golkeyvalNS "github.com/abhishekkr/gol/golkeyvalNS"
 )
 
@@ -48,13 +49,14 @@ func GetTSDSDBEngine(name string) TSDSDBEngine {
 
 /*
 GetDBEngine gets used by client to fetch a 'namespace' db-engine.
+parameter: Config with DBEngine, NSEngine, DBPath
 */
-func GetNamespaceEngine(dbEngine, nsEngine string) TSDSDBEngine {
-	db := golkeyval.GetDBEngine(dbEngine)
+func GetNamespaceEngine(config map[string]string) TSDSDBEngine {
+	db := golkeyval.GetDBEngine(config["DBEngine"])
 	tsdb.Configure(config)
 	db.CreateDB()
 
-	ns := golkeyvalNS.GetNSDBEngine(nsEngine)
+	ns := golkeyvalNS.GetNSDBEngine(config["NSEngine"])
 	ns.Configure(db)
 
 	tsds = GetTSDSDBEngine("namespace")
