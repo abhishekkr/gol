@@ -53,13 +53,13 @@ parameter: Config with DBEngine, NSEngine, DBPath
 */
 func GetNamespaceEngine(config map[string]string) TSDSDBEngine {
 	db := golkeyval.GetDBEngine(config["DBEngine"])
-	tsdb.Configure(config)
+	db.Configure(config)
 	db.CreateDB()
 
 	ns := golkeyvalNS.GetNSDBEngine(config["NSEngine"])
 	ns.Configure(db)
 
-	tsds = GetTSDSDBEngine("namespace")
+	tsds := GetTSDSDBEngine("namespace")
 	tsds.Configure(ns)
 	return tsds
 }
