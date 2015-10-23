@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	golerror "github.com/abhishekkr/gol/golerror"
+	golerror "../../golerror"
 )
 
 func main() {
