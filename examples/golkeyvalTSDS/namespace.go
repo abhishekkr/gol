@@ -5,7 +5,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
 
 	golkeyval "../../golkeyval"
 	golkeyvalNS "../../golkeyvalNS"
@@ -13,6 +12,7 @@ import (
 	golassert "github.com/abhishekkr/gol/golassert"
 	golfilesystem "github.com/abhishekkr/gol/golfilesystem"
 	golhashmap "github.com/abhishekkr/gol/golhashmap"
+	goltime "github.com/abhishekkr/gol/goltime"
 )
 
 var (
@@ -50,33 +50,61 @@ func setupTestData() {
 }
 
 func testTimeKeyPart() {
-	anytime := time.Date(2014, 1, 2, 12, 10, 1, 0, time.UTC)
+	anytime := goltime.Timestamp{
+		Year:  2014,
+		Month: 1,
+		Day:   2,
+		Hour:  12,
+		Min:   10,
+		Sec:   1,
+	}
 
-	expectedVal := "2014:January:2:12:10:1"
+	expectedVal := "2014:1:2:12:10:1:0"
 	resultVal := new(golkeyvalTSDS.Namespace).TimeKeyPart(anytime)
 	golassert.AssertEqual(expectedVal, resultVal)
 }
 
 func testKeyNameSpaceWithTime() {
-	anytime := time.Date(2014, 1, 2, 12, 10, 1, 0, time.UTC)
+	anytime := goltime.Timestamp{
+		Year:  2014,
+		Month: 1,
+		Day:   2,
+		Hour:  12,
+		Min:   10,
+		Sec:   1,
+	}
 
-	expectedVal := "upstate:2014:January:2:12:10:1"
+	expectedVal := "upstate:2014:1:2:12:10:1:0"
 	resultVal := new(golkeyvalTSDS.Namespace).KeyNameSpaceWithTime("upstate", anytime)
 	golassert.AssertEqual(expectedVal, resultVal)
 }
 
 func testTimeNameSpaceWithKey() {
-	anytime := time.Date(2014, 1, 2, 12, 10, 1, 0, time.UTC)
+	anytime := goltime.Timestamp{
+		Year:  2014,
+		Month: 1,
+		Day:   2,
+		Hour:  12,
+		Min:   10,
+		Sec:   1,
+	}
 
-	expectedVal := "2014:January:2:12:10:1:upstate"
+	expectedVal := "2014:1:2:12:10:1:0:upstate"
 	resultVal := new(golkeyvalTSDS.Namespace).TimeNameSpaceWithKey("upstate", anytime)
 	golassert.AssertEqual(expectedVal, resultVal)
 }
 
 func testKeyAndTimeBothNameSpace() {
-	anytime := time.Date(2014, 1, 2, 12, 10, 1, 0, time.UTC)
+	anytime := goltime.Timestamp{
+		Year:  2014,
+		Month: 1,
+		Day:   2,
+		Hour:  12,
+		Min:   10,
+		Sec:   1,
+	}
 
-	expectedVal1, expectedVal2 := "upstate:2014:January:2:12:10:1", "2014:January:2:12:10:1:upstate"
+	expectedVal1, expectedVal2 := "upstate:2014:1:2:12:10:1:0", "2014:1:2:12:10:1:0:upstate"
 	resultVal1, resultVal2 := new(golkeyvalTSDS.Namespace).KeyAndTimeBothNameSpace("upstate", anytime)
 	golassert.AssertEqual(expectedVal1, resultVal1)
 	golassert.AssertEqual(expectedVal2, resultVal2)
@@ -104,16 +132,23 @@ func testReadTSDS() {
 }
 
 func testPushTSDS() {
-	anytime := time.Date(2014, 1, 2, 12, 10, 1, 0, time.UTC)
+	anytime := goltime.Timestamp{
+		Year:  2014,
+		Month: 1,
+		Day:   2,
+		Hour:  12,
+		Min:   10,
+		Sec:   1,
+	}
 	setUpDB()
 	setupTestData()
 
 	if !tsds.PushTSDS("upstate", "up", anytime) {
-		panic("PushTSDS creation failed for upstate:2014:January:2:12:10:1")
+		panic("PushTSDS creation failed for upstate:2014:1:2:12:10:1:0")
 	}
 
-	expectedVal := "upstate:2014:January:2:12:10:1,up"
-	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:January:2:12:10:1"))
+	expectedVal := "upstate:2014:1:2:12:10:1:0,up"
+	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:1:2:12:10:1:0"))
 	golassert.AssertEqual(expectedVal, resultVal)
 
 	closeAndDeleteDB()
@@ -126,11 +161,11 @@ func testPushTSDSBaseKey() {
 	setupTestData()
 
 	if !tsds.PushTSDS_BaseKey("upstate", "up", anytime) {
-		panic("PushTSDS_BaseKey creation failed for upstate:2014:January:2:12:10:1")
+		panic("PushTSDS_BaseKey creation failed for upstate:2014:1:2:12:10:1:0")
 	}
 
-	expectedVal := "upstate:2014:January:2:12:10:1,up"
-	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:January:2:12:10:1"))
+	expectedVal := "upstate:2014:1:2:12:10:1:0,up"
+	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:1:2:12:10:1:0"))
 	golassert.AssertEqual(expectedVal, resultVal)
 
 	closeAndDeleteDB()
@@ -142,10 +177,10 @@ func testPushTSDSBaseTime() {
 	setupTestData()
 
 	if !tsds.PushTSDS_BaseTime("upstate", "up", anytime) {
-		panic("PushTSDS_BaseTime creation failed for upstate:2014:January:2:12:10:1")
+		panic("PushTSDS_BaseTime creation failed for upstate:2014:1:2:12:10:1:0")
 	}
-	expectedVal := "2014:January:2:12:10:1:upstate,up"
-	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("2014:January:2:12:10:1:upstate"))
+	expectedVal := "2014:1:2:12:10:1:0:upstate,up"
+	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("2014:1:2:12:10:1:0:upstate"))
 	golassert.AssertEqual(expectedVal, resultVal)
 
 	closeAndDeleteDB()
@@ -157,15 +192,15 @@ func testPushTSDSBaseBoth() {
 	setupTestData()
 
 	if !tsds.PushTSDS_BaseBoth("upstate", "up", anytime) {
-		panic("PushTSDS_BaseBoth creation failed for upstate:2014:January:2:12:10:1")
+		panic("PushTSDS_BaseBoth creation failed for upstate:2014:1:2:12:10:1:0")
 	}
 
-	expectedVal := "2014:January:2:12:10:1:upstate,up"
-	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("2014:January:2:12:10:1:upstate"))
+	expectedVal := "2014:1:2:12:10:1:0:upstate,up"
+	resultVal := golhashmap.HashMapToCSV(ns.ReadNSRecursive("2014:1:2:12:10:1:0:upstate"))
 	golassert.AssertEqual(expectedVal, resultVal)
 
-	expectedVal = "upstate:2014:January:2:12:10:1,up"
-	resultVal = golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:January:2:12:10:1"))
+	expectedVal = "upstate:2014:1:2:12:10:1:0,up"
+	resultVal = golhashmap.HashMapToCSV(ns.ReadNSRecursive("upstate:2014:1:2:12:10:1:0"))
 	golassert.AssertEqual(expectedVal, resultVal)
 
 	closeAndDeleteDB()

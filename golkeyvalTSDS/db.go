@@ -1,11 +1,10 @@
 package golkeyvalTSDS
 
 import (
-	"time"
-
 	golhashmap "github.com/abhishekkr/gol/golhashmap"
 	golkeyval "github.com/abhishekkr/gol/golkeyval"
 	golkeyvalNS "github.com/abhishekkr/gol/golkeyvalNS"
+	"github.com/abhishekkr/gol/goltime"
 )
 
 /*
@@ -13,7 +12,7 @@ DBEngine interface enables adapter feature for a key-val oriented DB.
 */
 type TSDSDBEngine interface {
 	Configure(namespaceType golkeyvalNS.NSDBEngine)
-	PushTSDS(key string, val string, tyme time.Time) bool
+	PushTSDS(key string, val string, tyme goltime.Timestamp) bool
 	PushNowTSDS(key string, val string) bool
 	ReadTSDS(key string) golhashmap.HashMap
 	DeleteTSDS(key string) bool
