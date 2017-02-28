@@ -30,5 +30,5 @@ func EnvMap() map[string]string {
 		envKeyValSplit := strings.Split(envKeyVal, "=")
 		key_val[envKeyValSplit[0]] = envKeyValSplit[1]
 	}
-	return
+	return key_val
 }
