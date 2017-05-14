@@ -39,7 +39,7 @@ func setHttpHeaders(req *http.Request, httpHeaders map[string]string) (err error
 	return
 }
 
-func httpClient(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
+func httpResponse(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (resp http.Response, err error) {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
@@ -59,12 +59,17 @@ func httpClient(httpMethod string, baseURL string, getParams map[string]string, 
 	req.URL = getURL(baseURL, getParams)
 	setHttpHeaders(req, httpHeaders)
 
-	resp, err := httpClient.Do(req)
+	resp, err = httpClient.Do(req)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
+	return
+}
+
+func httpResponseBody(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
+	resp, err := httpResponse(httpMethod, baseURL, getParams, httpHeaders)
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err == nil {
 		body = string(bodyText)
@@ -75,24 +80,28 @@ func httpClient(httpMethod string, baseURL string, getParams map[string]string, 
 	return
 }
 
+func Http(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (resp http.Response, err error) {
+	return httpResponse(httpMethod, baseURL, getParams, httpHeaders)
+}
+
 func HttpGet(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	body, err = httpClient("GET", baseURL, getParams, httpHeaders)
+	body, err = httpResponseBody("GET", baseURL, getParams, httpHeaders)
 	return
 }
 
 func HttpPut(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
 	// need to handle PUT body content
-	body, err = httpClient("PUT", baseURL, getParams, httpHeaders)
+	body, err = httpResponseBody("PUT", baseURL, getParams, httpHeaders)
 	return
 }
 
 func HttpPost(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
 	// need to handle POST body content
-	body, err = httpClient("POST", baseURL, getParams, httpHeaders)
+	body, err = httpResponseBody("POST", baseURL, getParams, httpHeaders)
 	return
 }
 
 func HttpDelete(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	body, err = httpClient("DELETE", baseURL, getParams, httpHeaders)
+	body, err = httpResponseBody("DELETE", baseURL, getParams, httpHeaders)
 	return
 }
