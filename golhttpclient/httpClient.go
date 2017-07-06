@@ -11,6 +11,22 @@ import (
 	"time"
 )
 
+func UrlRedirectTo(url string) string {
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return nil
+		},
+	}
+
+	resp, err := client.Get(url)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return resp.Request.URL
+}
+
 func LinkExists(url string) bool {
 	var netClient = &http.Client{
 		Timeout: time.Second * 10,
