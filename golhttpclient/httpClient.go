@@ -24,7 +24,7 @@ func UrlRedirectTo(url string) string {
 		log.Println(err)
 	}
 
-	return resp.Request.URL
+	return resp.Request.URL.String()
 }
 
 func LinkExists(url string) bool {
