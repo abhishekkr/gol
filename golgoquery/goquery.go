@@ -56,7 +56,7 @@ func GoqueryTextFrom(url string, goquerySelector string) (results GoqueryResults
 	return
 }
 
-func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryResults) {
+func GoqueryAttrsFromParents(url string, selectors []string, attr string) (results GoqueryResults) {
 	var domNodes *goquery.Selection
 	last_idx := len(selectors) - 1
 	for idx, selector := range selectors {
@@ -66,8 +66,16 @@ func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryRes
 			domNodes = Goquery(url, selector)
 		}
 		if idx == last_idx {
-			results.GoqueryAttrsFrom(domNodes, "href")
+			results.GoqueryAttrsFrom(domNodes, attr)
 		}
 	}
 	return
+}
+
+func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryResults) {
+	GoqueryAttrsFromParents(url, selectors, "href")
+}
+
+func GoqueryTextFromParents(url string, selectors []string) (results GoqueryResults) {
+	GoqueryAttrsFromParents(url, selectors, "text")
 }
