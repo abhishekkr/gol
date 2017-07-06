@@ -1,4 +1,4 @@
-package gol_goquery
+package golgoquery
 
 import (
 	"log"
