@@ -73,9 +73,11 @@ func GoqueryAttrsFromParents(url string, selectors []string, attr string) (resul
 }
 
 func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryResults) {
-	GoqueryAttrsFromParents(url, selectors, "href")
+	results = GoqueryAttrsFromParents(url, selectors, "href")
+	return
 }
 
 func GoqueryTextFromParents(url string, selectors []string) (results GoqueryResults) {
-	GoqueryAttrsFromParents(url, selectors, "text")
+	results = GoqueryAttrsFromParents(url, selectors, "text")
+	return
 }
