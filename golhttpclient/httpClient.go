@@ -11,6 +11,17 @@ import (
 	"time"
 )
 
+func LinkExists(url string) bool {
+	var netClient = &http.Client{
+		Timeout: time.Second * 10,
+	}
+	response, err := netClient.Get(url)
+	if err != nil || response.StatusCode > 399 {
+		return false
+	}
+	return true
+}
+
 func getURL(baseURL string, getParams map[string]string) (url *url.URL) {
 	var getParamsURI string
 	for key, val := range getParams {
