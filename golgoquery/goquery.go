@@ -6,12 +6,23 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+var (
+	CacheGoquery bool
+)
+
 type GoqueryResults struct {
 	Results []string
 }
 
 func GoqueryDocument(url string) *goquery.Document {
-	doc, err := goquery.NewDocument(url)
+	var doc *goquery.Document
+	var err error
+
+	if CacheGoquery == true {
+		doc, err = CacheUrl(url)
+	} else {
+		doc, err = goquery.NewDocument(url)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
