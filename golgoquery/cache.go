@@ -14,18 +14,27 @@ import (
 )
 
 var (
-	CacheDir string
+	CacheDir = "/tmp/.tune.cli"
 )
 
 func createCache(cachePath string, cacheContent string) {
 	cacheDir := path.Dir(cachePath)
 	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
+		log.Printf("[warn] cannot find default CacheDir(%s), creating cachedir", CacheDir)
 		os.Mkdir(CacheDir, 0777)
+	}
+
+	err := ioutil.WriteFile(cachePath, []byte(cacheContent), 0644)
+	if err != nil {
+		log.Printf("[warn] cannot create cache (%s), creating cachedir", cachePath)
 	}
 }
 
 func readCache(cachePath string) string {
 	dat, err := ioutil.ReadFile(cachePath)
+	if err != nil {
+		log.Printf("[warn] missing cache file %s", cachePath)
+	}
 	return string(dat)
 }
 
@@ -37,22 +46,17 @@ func urlToFilename(url string) string {
 		"=", "-",
 		"\\", "-",
 		"/", "-",
+		":", "-",
 	)
 	return replacer.Replace(url)
 }
 
 func CacheUrl(url string) (*goquery.Document, error) {
-	urlFile = urlToFilename(url)
-	if CacheDir == "" {
-		if _, err := os.Stat("/tmp"); os.IsNotExist(err) {
-			log.Fatalf("cannot find default CacheDir(%s), default cachedir is not created", CacheDir)
-		}
-		CacheDir = "/tmp"
-	}
-	cachePath := fmt.Sprintf("%s%s%s", CacheDir, filepath.Separator, urlFile)
+	urlFile := urlToFilename(url)
+	cachePath := fmt.Sprintf("%s%s%s", CacheDir, string(filepath.Separator), urlFile)
 
 	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		body, err := golhttpclient.HttpGet(url)
+		body, err := golhttpclient.HttpGet(url, map[string]string{}, map[string]string{})
 		if err != nil {
 			log.Fatalf("not able to fetch %s", url)
 		}
@@ -61,10 +65,5 @@ func CacheUrl(url string) (*goquery.Document, error) {
 
 	cache := readCache(cachePath)
 
-	utfBody, err := iconv.NewReader(cache, charset, "utf-8")
-	if err != nil {
-		log.Fatalf("not able to read data of %s", url)
-	}
-
-	return goquery.NewDocumentFromReader(strings.NewReader(utfBody))
+	return goquery.NewDocumentFromReader(strings.NewReader(cache))
 }
