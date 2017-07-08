@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -62,4 +63,25 @@ func ExecOutput(cmdline string) string {
 		return out.String()
 	}
 	return fmt.Sprintf("Error: %s", err.Error())
+}
+
+/*
+Run it for distro to manage opening with correct program
+*/
+func RunWithAssignedApp(runThis string) string {
+	var openWith string
+	if runtime.GOOS == "linux" {
+		openWith = "xdg-open"
+	} else if runtime.GOOS == "darwin" {
+		openWith = "open"
+	} else {
+		return fmt.Sprintf("Error: %s is not supported as yet.", runtime.GOOS)
+	}
+
+	if !IsSystemCmd(openWith) {
+		return fmt.Sprintf("Error: %s not found on this machine.", openWith)
+	}
+
+	cmdToRun := fmt.Sprintf("%s %s", openWith, runThis)
+	return ExecOutput(cmdToRun)
 }
