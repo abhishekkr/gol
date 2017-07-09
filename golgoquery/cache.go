@@ -14,7 +14,9 @@ import (
 )
 
 var (
-	CacheDir = "/tmp/.tune.cli"
+	ReloadCache bool
+	CacheDir    = "/tmp/.tune.cli"
+	UserAgent   = "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0"
 )
 
 func createCache(cachePath string, cacheContent string) {
@@ -38,6 +40,13 @@ func readCache(cachePath string) string {
 	return string(dat)
 }
 
+func cleanCache(cachePath string) {
+	var err = os.Remove(cachePath)
+	if err != nil {
+		log.Printf("[warn] failed cleaning %s", cachePath)
+	}
+}
+
 func urlToFilename(url string) string {
 	var replacer = strings.NewReplacer(" ", "-",
 		"\t", "-",
@@ -55,8 +64,17 @@ func CacheUrl(url string) (*goquery.Document, error) {
 	urlFile := urlToFilename(url)
 	cachePath := fmt.Sprintf("%s%s%s", CacheDir, string(filepath.Separator), urlFile)
 
+	if ReloadCache {
+		log.Println("[warn] cleaning cache ", cachePath)
+		cleanCache(cachePath)
+	}
+
 	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		body, err := golhttpclient.HttpGet(url, map[string]string{}, map[string]string{})
+		headers := map[string]string{
+			"User-Agent": UserAgent,
+		}
+		log.Println("[info] fetching ", url)
+		body, err := golhttpclient.HttpGet(url, map[string]string{}, headers)
 		if err != nil {
 			log.Fatalf("not able to fetch %s", url)
 		}
