@@ -1,6 +1,8 @@
 package golgoquery
 
 import (
+	"errors"
+	"fmt"
 	"log"
 
 	"github.com/PuerkitoBio/goquery"
@@ -29,14 +31,19 @@ func GoqueryDocument(url string) *goquery.Document {
 	return doc
 }
 
-func Goquery(url string, goquerySelector string) (domNode *goquery.Selection) {
-	doc := GoqueryDocument(url)
-
+func GoqueryFromDocument(doc *goquery.Document, goquerySelector string) (domNode *goquery.Selection) {
 	domNode = doc.Find(goquerySelector)
 	return
 }
 
-func (results *GoqueryResults) GoqueryAttrsFrom(domNodes *goquery.Selection, attr string) {
+func Goquery(url string, goquerySelector string) (domNode *goquery.Selection) {
+	doc := GoqueryDocument(url)
+
+	domNode = GoqueryFromDocument(doc, goquerySelector)
+	return
+}
+
+func (results *GoqueryResults) GoqueryAttrsFrom(domNodes *goquery.Selection, attr string) (err error) {
 	results.Results = make([]string, domNodes.Size())
 	domNodes.Each(func(i int, s *goquery.Selection) {
 		var attrValue string
@@ -48,47 +55,47 @@ func (results *GoqueryResults) GoqueryAttrsFrom(domNodes *goquery.Selection, att
 			attrValue, attrPresent = s.Attr(attr)
 		}
 		if !attrPresent {
-			s_html, _ := s.Html()
-			log.Printf("[warn] %s\n", s_html)
+			if err == nil {
+				err = errors.New(fmt.Sprintf("%s", attr))
+			} else {
+				err = errors.New(fmt.Sprintf("%s | %s", err.Error(), attr))
+			}
 		}
 
 		results.Results[i] = attrValue
 	})
+	return nil
+}
+
+func GoqueryHrefsFrom(url string, goquerySelector string) (results GoqueryResults, err error) {
+	err = results.GoqueryAttrsFrom(Goquery(url, goquerySelector), "href")
 	return
 }
 
-func GoqueryHrefsFrom(url string, goquerySelector string) (results GoqueryResults) {
-	results.GoqueryAttrsFrom(Goquery(url, goquerySelector), "href")
+func GoqueryTextFrom(url string, goquerySelector string) (results GoqueryResults, err error) {
+	err = results.GoqueryAttrsFrom(Goquery(url, goquerySelector), "text")
 	return
 }
 
-func GoqueryTextFrom(url string, goquerySelector string) (results GoqueryResults) {
-	results.GoqueryAttrsFrom(Goquery(url, goquerySelector), "text")
-	return
-}
-
-func GoqueryAttrsFromParents(url string, selectors []string, attr string) (results GoqueryResults) {
-	var domNodes *goquery.Selection
-	last_idx := len(selectors) - 1
-	for idx, selector := range selectors {
-		if selector == ".." {
+func GoqueryAttrsFromParents(url string, selectors []string, attr string) (results GoqueryResults, err error) {
+	domNodes := Goquery(url, selectors[0])
+	for idx := 1; idx < len(selectors); idx++ {
+		if selectors[idx] == ".." {
 			domNodes = domNodes.Parent()
 		} else {
-			domNodes = Goquery(url, selector)
-		}
-		if idx == last_idx {
-			results.GoqueryAttrsFrom(domNodes, attr)
+			domNodes.Find(selectors[idx])
 		}
 	}
+	err = results.GoqueryAttrsFrom(domNodes, attr)
 	return
 }
 
-func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryResults) {
-	results = GoqueryAttrsFromParents(url, selectors, "href")
+func GoqueryHrefsFromParents(url string, selectors []string) (results GoqueryResults, err error) {
+	results, err = GoqueryAttrsFromParents(url, selectors, "href")
 	return
 }
 
-func GoqueryTextFromParents(url string, selectors []string) (results GoqueryResults) {
-	results = GoqueryAttrsFromParents(url, selectors, "text")
+func GoqueryTextFromParents(url string, selectors []string) (results GoqueryResults, err error) {
+	results, err = GoqueryAttrsFromParents(url, selectors, "text")
 	return
 }
