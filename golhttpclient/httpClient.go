@@ -1,6 +1,7 @@
 package golhttpclient
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,6 +11,14 @@ import (
 	"strings"
 	"time"
 )
+
+type HTTPRequest struct {
+	Method      string
+	Url         string
+	GetParams   map[string]string
+	HTTPHeaders map[string]string
+	Body        *bytes.Buffer
+}
 
 func UrlRedirectTo(url string) string {
 	client := &http.Client{
@@ -38,16 +47,16 @@ func LinkExists(url string) bool {
 	return true
 }
 
-func getURL(baseURL string, getParams map[string]string) (url *url.URL) {
+func (httpRequest *HTTPRequest) getURL() (url *url.URL) {
 	var getParamsURI string
-	for key, val := range getParams {
+	for key, val := range httpRequest.GetParams {
 		if getParamsURI == "" {
 			getParamsURI = fmt.Sprintf("%s=%s", key, val)
 		} else {
 			getParamsURI = fmt.Sprintf("%s&%s=%s", getParamsURI, key, val)
 		}
 	}
-	request_url := fmt.Sprintf("%s?%s", baseURL, getParamsURI)
+	request_url := fmt.Sprintf("%s?%s", httpRequest.Url, getParamsURI)
 	url, err := url.Parse(request_url)
 
 	if err != nil {
@@ -57,8 +66,8 @@ func getURL(baseURL string, getParams map[string]string) (url *url.URL) {
 	return
 }
 
-func setHttpHeaders(req *http.Request, httpHeaders map[string]string) (err error) {
-	basicAuth := strings.Split(httpHeaders["basicAuth"], ":")
+func (httpRequest *HTTPRequest) setHttpHeaders(req *http.Request) (err error) {
+	basicAuth := strings.Split(httpRequest.HTTPHeaders["basicAuth"], ":")
 	if len(basicAuth) > 1 {
 		apiUsername, apiPassword := basicAuth[0], strings.Join(basicAuth[1:], ":")
 		req.SetBasicAuth(apiUsername, apiPassword)
@@ -66,7 +75,7 @@ func setHttpHeaders(req *http.Request, httpHeaders map[string]string) (err error
 	return
 }
 
-func httpResponse(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (resp *http.Response, err error) {
+func (httpRequest *HTTPRequest) httpResponse() (resp *http.Response, err error) {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
@@ -79,12 +88,17 @@ func httpResponse(httpMethod string, baseURL string, getParams map[string]string
 		},
 	}
 
-	req, err := http.NewRequest(httpMethod, "", nil)
+	var req *http.Request
+	if httpRequest.Body == nil {
+		req, err = http.NewRequest(httpRequest.Method, "", nil)
+	} else {
+		req, err = http.NewRequest(httpRequest.Method, "", httpRequest.Body)
+	}
 	if err != nil {
 		return
 	}
-	req.URL = getURL(baseURL, getParams)
-	setHttpHeaders(req, httpHeaders)
+	req.URL = httpRequest.getURL()
+	httpRequest.setHttpHeaders(req)
 
 	resp, err = httpClient.Do(req)
 	if err != nil {
@@ -95,40 +109,43 @@ func httpResponse(httpMethod string, baseURL string, getParams map[string]string
 	return
 }
 
-func httpResponseBody(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	resp, err := httpResponse(httpMethod, baseURL, getParams, httpHeaders)
+func (httpRequest *HTTPRequest) httpResponseBody() (body string, err error) {
+	resp, err := httpRequest.httpResponse()
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err == nil {
 		body = string(bodyText)
 	} else {
 		log.Println(err)
 	}
-
 	return
 }
 
-func Http(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (resp *http.Response, err error) {
-	return httpResponse(httpMethod, baseURL, getParams, httpHeaders)
-}
-
-func HttpGet(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	body, err = httpResponseBody("GET", baseURL, getParams, httpHeaders)
+func (httpRequest *HTTPRequest) Http(httpMethod string) (resp *http.Response, err error) {
+	httpRequest.Method = httpMethod
+	resp, err = httpRequest.httpResponse()
 	return
 }
 
-func HttpPut(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	// need to handle PUT body content
-	body, err = httpResponseBody("PUT", baseURL, getParams, httpHeaders)
+func (httpRequest *HTTPRequest) Get() (body string, err error) {
+	httpRequest.Method = "GET"
+	body, err = httpRequest.httpResponseBody()
 	return
 }
 
-func HttpPost(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	// need to handle POST body content
-	body, err = httpResponseBody("POST", baseURL, getParams, httpHeaders)
+func (httpRequest *HTTPRequest) Put() (body string, err error) {
+	httpRequest.Method = "PUT"
+	body, err = httpRequest.httpResponseBody()
 	return
 }
 
-func HttpDelete(baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
-	body, err = httpResponseBody("DELETE", baseURL, getParams, httpHeaders)
+func (httpRequest *HTTPRequest) Post() (body string, err error) {
+	httpRequest.Method = "POST"
+	body, err = httpRequest.httpResponseBody()
+	return
+}
+
+func (httpRequest *HTTPRequest) Delete() (body string, err error) {
+	httpRequest.Method = "DELETE"
+	body, err = httpRequest.httpResponseBody()
 	return
 }
