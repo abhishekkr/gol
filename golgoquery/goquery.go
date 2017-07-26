@@ -64,7 +64,7 @@ func (results *GoqueryResults) GoqueryAttrsFrom(domNodes *goquery.Selection, att
 
 		results.Results[i] = attrValue
 	})
-	return nil
+	return
 }
 
 func GoqueryHrefsFrom(url string, goquerySelector string) (results GoqueryResults, err error) {
@@ -83,7 +83,7 @@ func GoqueryAttrsFromParents(url string, selectors []string, attr string) (resul
 		if selectors[idx] == ".." {
 			domNodes = domNodes.Parent()
 		} else {
-			domNodes.Find(selectors[idx])
+			domNodes = domNodes.Find(selectors[idx])
 		}
 	}
 	err = results.GoqueryAttrsFrom(domNodes, attr)
