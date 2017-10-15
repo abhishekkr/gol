@@ -72,6 +72,9 @@ func (httpRequest *HTTPRequest) setHttpHeaders(req *http.Request) (err error) {
 		apiUsername, apiPassword := basicAuth[0], strings.Join(basicAuth[1:], ":")
 		req.SetBasicAuth(apiUsername, apiPassword)
 	}
+	for header, value := range httpRequest.HTTPHeaders {
+		req.Header.Add(header, value)
+	}
 	return
 }
 
@@ -111,12 +114,19 @@ func (httpRequest *HTTPRequest) httpResponse() (resp *http.Response, err error) 
 
 func (httpRequest *HTTPRequest) httpResponseBody() (body string, err error) {
 	resp, err := httpRequest.httpResponse()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err == nil {
 		body = string(bodyText)
 	} else {
 		log.Println(err)
+		return
 	}
+
 	return
 }
 
