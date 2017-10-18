@@ -8,10 +8,14 @@ import (
 	"io"
 )
 
+type DataBlob []byte
+type Cipher []byte
+type Key []byte
+
 type AESBlock struct {
-	DataBlob []byte
-	Cipher   []byte
-	Key      []byte
+	DataBlob DataBlob
+	Cipher   Cipher
+	Key      Key
 }
 
 func (aesBlock *AESBlock) Encrypt() error {
