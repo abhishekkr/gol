@@ -69,6 +69,32 @@ func (dory *Dory) FetchSecret() (value []byte, err error) {
 	return
 }
 
+func (dory *Dory) RefreshSecret() (value []byte, err error) {
+	request := golhttpclient.HTTPRequest{}
+
+	backend := dory.Backend
+	if backend == "" {
+		backend = "local-auth"
+	}
+
+	if dory.Key == "" || dory.Token == "" {
+		log.Fatalln("key and token need to be provided to fetch")
+	}
+
+	request.Url = fmt.Sprintf("%s/%s/%s", dory.BaseUrl, backend, dory.Key)
+
+	request.GetParams = map[string]string{
+		"keep": "true",
+	}
+
+	request.HTTPHeaders = map[string]string{
+		"X-DORY-TOKEN": dory.Token,
+	}
+
+	dory.Token, err = request.Get()
+	return
+}
+
 func (dory *Dory) PurgeSecret() (err error) {
 	request := golhttpclient.HTTPRequest{}
 
