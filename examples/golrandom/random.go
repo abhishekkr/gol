@@ -7,5 +7,6 @@ import (
 )
 
 func main() {
+	fmt.Println(golrandom.Name(16))
 	fmt.Println(golrandom.Token(16))
 }

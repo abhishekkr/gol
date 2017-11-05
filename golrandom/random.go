@@ -24,3 +24,22 @@ func Token(tokenLength int) string {
 
 	return string(token)
 }
+
+func Name(nameLength int) string {
+	randomFactor := make([]byte, nameLength*2)
+	_, err := cryptoRand.Read(randomFactor)
+	if err != nil {
+		panic(err)
+	}
+
+	mathRand.Seed(time.Now().UnixNano() * int64(randomFactor[0]))
+
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
+
+	token := make([]rune, nameLength)
+	for i := range token {
+		token[i] = letterRunes[mathRand.Intn(len(letterRunes))]
+	}
+
+	return string(token)
+}
