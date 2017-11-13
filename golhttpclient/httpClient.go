@@ -2,6 +2,7 @@ package golhttpclient
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -12,6 +13,10 @@ import (
 	"time"
 )
 
+var (
+	SkipSSLVerify bool
+)
+
 type HTTPRequest struct {
 	Method      string
 	Url         string
@@ -20,11 +25,34 @@ type HTTPRequest struct {
 	Body        *bytes.Buffer
 }
 
+func customRoundTripper() (customTransport http.RoundTripper) {
+	customTransport = &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: SkipSSLVerify},
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+	/*
+		var ProxyFromEnvironment *http.Request
+		if ProxyFromEnvironment != nil {
+			*customTransport.Proxy = ProxyFromEnvironment
+		}
+	*/
+	return
+}
+
 func UrlRedirectTo(url string) string {
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return nil
 		},
+		Transport: customRoundTripper(),
 	}
 
 	resp, err := client.Get(url)
@@ -38,7 +66,8 @@ func UrlRedirectTo(url string) string {
 
 func LinkExists(url string) bool {
 	var netClient = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout:   time.Second * 10,
+		Transport: customRoundTripper(),
 	}
 	response, err := netClient.Get(url)
 	if err != nil || response.StatusCode > 399 {
@@ -56,8 +85,8 @@ func (httpRequest *HTTPRequest) getURL() (url *url.URL) {
 			getParamsURI = fmt.Sprintf("%s&%s=%s", getParamsURI, key, val)
 		}
 	}
-	request_url := fmt.Sprintf("%s?%s", httpRequest.Url, getParamsURI)
-	url, err := url.Parse(request_url)
+	requestUrl := fmt.Sprintf("%s?%s", httpRequest.Url, getParamsURI)
+	url, err := url.Parse(requestUrl)
 
 	if err != nil {
 		log.Println(err)
@@ -80,15 +109,7 @@ func (httpRequest *HTTPRequest) setHttpHeaders(req *http.Request) (err error) {
 
 func (httpRequest *HTTPRequest) httpResponse() (resp *http.Response, err error) {
 	httpClient := &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ResponseHeaderTimeout: 10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-		},
+		Transport: customRoundTripper(),
 	}
 
 	var req *http.Request
