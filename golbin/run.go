@@ -33,7 +33,7 @@ func startCommand(sysCommand string) *exec.Cmd {
 Run executes command from Console field with its input
 and sets the output or error whatever gets prompted.
 */
-func (konsole *Console) Run() {
+func (konsole *Console) Run() (err error) {
 	cmd := startCommand(konsole.Command)
 	if konsole.StdInput != "" {
 		cmd.Stdin = strings.NewReader(konsole.StdInput)
@@ -42,12 +42,13 @@ func (konsole *Console) Run() {
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	err := cmd.Run()
+	err = cmd.Run()
 	if err == nil {
 		konsole.StdOutput = out.String()
 	} else {
 		konsole.StdOutput = fmt.Sprintf("Error: %s", err.Error())
 	}
+	return
 }
 
 /*
