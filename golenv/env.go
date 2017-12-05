@@ -8,7 +8,9 @@ import (
 func OverrideIfEnv(envVar string, defaultValue string) string {
 	if HasEnv(envVar) {
 		envVarValue := os.Getenv(envVar)
-		return envVarValue
+		if envVarValue != "" {
+			return envVarValue
+		}
 	}
 	return defaultValue
 }
