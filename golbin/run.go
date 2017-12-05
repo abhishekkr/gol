@@ -46,7 +46,7 @@ func (konsole *Console) Run() (err error) {
 	if err == nil {
 		konsole.StdOutput = out.String()
 	} else {
-		konsole.StdOutput = fmt.Sprintf("Error: %s", err.Error())
+		konsole.StdOutput = fmt.Sprintf("Stdout: %s\nError: %s", out.String(), err.Error())
 	}
 	return
 }
@@ -85,4 +85,14 @@ func RunWithAssignedApp(runThis string) string {
 
 	cmdToRun := fmt.Sprintf("%s %s", openWith, runThis)
 	return ExecOutput(cmdToRun)
+}
+
+func Exec(cmd string) (out string, err error) {
+	parts := strings.Fields(cmd)
+	head := parts[0]
+	parts = parts[1:len(parts)]
+
+	outBytes, err := exec.Command(head, parts...).Output()
+	out = string(outBytes)
+	return
 }
