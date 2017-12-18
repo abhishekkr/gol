@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 
+	"github.com/abhishekkr/gol/golerror"
 	"github.com/abhishekkr/gol/golhttpclient"
 	"github.com/abhishekkr/gol/golrandom"
 )
@@ -56,7 +56,8 @@ func (dory *Dory) FetchSecret() (value []byte, err error) {
 	}
 
 	if dory.Key == "" || dory.Token == "" {
-		log.Fatalln("key and token need to be provided to fetch")
+		err = golerror.Error(123, "key or token can't be empty")
+		return
 	}
 
 	request.Url = fmt.Sprintf("%s/%s/%s", dory.BaseUrl, backend, dory.Key)
@@ -78,7 +79,8 @@ func (dory *Dory) RefreshSecret() (value []byte, err error) {
 	}
 
 	if dory.Key == "" || dory.Token == "" {
-		log.Fatalln("key and token need to be provided to fetch")
+		err = golerror.Error(123, "key and token need to be provided to fetch")
+		return
 	}
 
 	request.Url = fmt.Sprintf("%s/%s/%s", dory.BaseUrl, backend, dory.Key)
@@ -105,7 +107,8 @@ func (dory *Dory) PurgeSecret() (err error) {
 
 	key := dory.Key
 	if key == "" {
-		log.Fatalln("no key provided to purge")
+		err = golerror.Error(123, "no key provided to purge")
+		return
 	}
 
 	request.Url = fmt.Sprintf("%s/%s/%s", dory.BaseUrl, backend, dory.Key)
