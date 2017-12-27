@@ -2,7 +2,7 @@ package goldb
 
 var (
 	MigrationSQLDefault = map[string]string{
-		"init": "CREATE TABLE IF NOT EXISTS migrations (uuid STRING PRIMARY KEY) ;",
+		"init": "CREATE TABLE IF NOT EXISTS migrations (uuid VARCHAR PRIMARY KEY) ;",
 		"up":   "INSERT INTO migrations (uuid) VALUES ('%s') ;",
 		"down": "DELETE FROM migrations WHERE uuid = '%s' ;",
 	}
