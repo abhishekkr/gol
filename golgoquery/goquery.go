@@ -36,6 +36,11 @@ func GoqueryFromDocument(doc *goquery.Document, goquerySelector string) (domNode
 	return
 }
 
+func GoqueryFromNode(node *goquery.Selection, goquerySelector string) (domNode *goquery.Selection) {
+	domNode = node.Find(goquerySelector)
+	return
+}
+
 func Goquery(url string, goquerySelector string) (domNode *goquery.Selection) {
 	doc := GoqueryDocument(url)
 
