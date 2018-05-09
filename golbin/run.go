@@ -87,12 +87,29 @@ func RunWithAssignedApp(runThis string) string {
 	return ExecOutput(cmdToRun)
 }
 
-func Exec(cmd string) (out string, err error) {
+func cmdStringToExecCmd(cmd string) *exec.Cmd {
 	parts := strings.Fields(cmd)
-	head := parts[0]
-	parts = parts[1:len(parts)]
+	first := parts[0]
+	rest := []string{}
+	if len(parts) > 1 {
+		rest = parts[1:len(parts)]
+	}
+	return exec.Command(first, rest...)
+}
 
-	outBytes, err := exec.Command(head, parts...).Output()
+func Exec(cmd string) (out string, err error) {
+	outBytes, err := cmdStringToExecCmd(cmd).Output()
+	out = string(outBytes)
+	return
+}
+
+func ExecWithEnv(cmd string, env map[string]string) (out string, err error) {
+	cmdHandle := cmdStringToExecCmd(cmd)
+	cmdHandle.Env = os.Environ()
+	for envVar, envVal := range env {
+		cmdHandle.Env = append(cmdHandle.Env, envVar, envVal)
+	}
+	outBytes, err := cmdHandle.Output()
 	out = string(outBytes)
 	return
 }
