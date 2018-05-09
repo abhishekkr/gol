@@ -133,27 +133,37 @@ func (httpRequest *HTTPRequest) httpResponse() (resp *http.Response, err error) 
 	return
 }
 
-func (httpRequest *HTTPRequest) httpResponseBody() (body string, err error) {
+func (httpRequest *HTTPRequest) httpResponseBytes() (body []byte, err error) {
 	resp, err := httpRequest.httpResponse()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
+	body, err = ioutil.ReadAll(resp.Body)
+	return
+}
+
+func (httpRequest *HTTPRequest) httpResponseBody() (body string, err error) {
+	bodyText, err := httpRequest.httpResponseBytes()
 	if err == nil {
 		body = string(bodyText)
 	} else {
 		log.Println(err)
 		return
 	}
-
 	return
 }
 
 func (httpRequest *HTTPRequest) Http(httpMethod string) (resp *http.Response, err error) {
 	httpRequest.Method = httpMethod
 	resp, err = httpRequest.httpResponse()
+	return
+}
+
+func (httpRequest *HTTPRequest) GetBytes() (body []byte, err error) {
+	httpRequest.Method = "GET"
+	body, err = httpRequest.httpResponseBytes()
 	return
 }
 
