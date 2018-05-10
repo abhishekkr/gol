@@ -107,7 +107,7 @@ func ExecWithEnv(cmd string, env map[string]string) (out string, err error) {
 	cmdHandle := cmdStringToExecCmd(cmd)
 	cmdHandle.Env = os.Environ()
 	for envVar, envVal := range env {
-		cmdHandle.Env = append(cmdHandle.Env, envVar, envVal)
+		cmdHandle.Env = append(cmdHandle.Env, fmt.Sprintf("%s=%s", envVar, envVal))
 	}
 	outBytes, err := cmdHandle.Output()
 	out = string(outBytes)
