@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/abhishekkr/gol/golerror"
 )
 
 /*
@@ -97,10 +99,23 @@ func cmdStringToExecCmd(cmd string) *exec.Cmd {
 	return exec.Command(first, rest...)
 }
 
-func Exec(cmd string) (out string, err error) {
-	outBytes, err := cmdStringToExecCmd(cmd).Output()
-	out = string(outBytes)
+func execCmd(cmdHandle *exec.Cmd) (out string, err error) {
+	var stdout, stderr bytes.Buffer
+	cmdHandle.Stdout = &stdout
+	cmdHandle.Stderr = &stderr
+	err = cmdHandle.Run()
+
+	if err != nil {
+		err = golerror.Error(127, fmt.Sprintf("'%s' :: '%s'", stderr.String(), err.Error()))
+	}
+
+	out = stdout.String()
 	return
+}
+
+func Exec(cmd string) (out string, err error) {
+	cmdHandle := cmdStringToExecCmd(cmd)
+	return execCmd(cmdHandle)
 }
 
 func ExecWithEnv(cmd string, env map[string]string) (out string, err error) {
@@ -109,7 +124,6 @@ func ExecWithEnv(cmd string, env map[string]string) (out string, err error) {
 	for envVar, envVal := range env {
 		cmdHandle.Env = append(cmdHandle.Env, fmt.Sprintf("%s=%s", envVar, envVal))
 	}
-	outBytes, err := cmdHandle.Output()
-	out = string(outBytes)
-	return
+
+	return execCmd(cmdHandle)
 }
