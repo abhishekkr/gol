@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	golgoquery "github.com/abhishekkr/gol/golgoquery"
 )
 
-func Dummy(results golgoquery.GoqueryResults) (golgoquery.GoqueryResults, error) {
-	for _, result := range results.Results {
+func Dummy(resultsList []golgoquery.GoqueryResults, idx int) ([]golgoquery.GoqueryResults, error) {
+	for _, result := range resultsList[idx].Results {
 		fmt.Println(result)
 	}
-	return results, nil
+	return resultsList, nil
 }
 
 var (
@@ -18,8 +19,8 @@ var (
 	attribute = "text"
 	actionmap = map[string]golgoquery.Action{"Dummy": Dummy}
 
-	queries = []golgoquery.Query{
-		golgoquery.Query{
+	queries = [](*golgoquery.Query){
+		&golgoquery.Query{
 			Selector:   selector,
 			Attribute:  attribute,
 			ActionName: "Dummy",
@@ -30,11 +31,11 @@ var (
 
 	uriFlow = golgoquery.URIFlow{
 		URI:        golgoquery.URI("http://example.com"),
-		QueryFlows: []golgoquery.QueryFlow{queryFlow},
+		QueryFlows: [](*golgoquery.QueryFlow){&queryFlow},
 	}
 
 	workflow = golgoquery.QueryDSL{
-		URIFlows: []golgoquery.URIFlow{uriFlow},
+		URIFlows: [](*golgoquery.URIFlow){&uriFlow},
 	}
 
 	jsonblobx = `
@@ -61,7 +62,18 @@ var (
 
 func main() {
 	workflow.Proc(actionmap)
-	golgoquery.FromJson([]byte(jsonblobx), actionmap)
-	golgoquery.FromJson([]byte(jsonbloby), actionmap)
+	log.Printf("%v", workflow.URIFlows[0].QueryFlows[0].ResultsList)
+	qDSL, err := golgoquery.FromJson([]byte(jsonblobx), actionmap)
+	if err == nil {
+		log.Printf("%v", qDSL.URIFlows[0].QueryFlows[0].ResultsList)
+	} else {
+		log.Println(err)
+	}
+	qDSL, err = golgoquery.FromJson([]byte(jsonbloby), actionmap)
+	if err == nil {
+		log.Printf("%v", qDSL.URIFlows[0].QueryFlows[0].ResultsList)
+	} else {
+		log.Println(err)
+	}
 	fmt.Println("~finito")
 }

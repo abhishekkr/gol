@@ -10,51 +10,24 @@ import (
 )
 
 /*
-{ "uriflows": [
-  { "uri": "http://example.com/",
-    "queryflows": [
-	  {
-	    "queries": [
-	      {
-			"selector": ["div", "p"],
-			"attribute": "text",
-			"action": "Dummy"
-		  },
-	      {
-			"selector": ["div", "a"],
-			"attribute": "href",
-			"action": "Dummy"
-		  }
-	    ]
-      }
-	]
-  }
-]}
-
-above DSL
-* fetchs "uri"
-* picks every query from "queryflows"
-> * first "query", pulls innerHTML text from "div.p" selector element; passes list of results to Method mapped to "Dummy"
-> * then next "query", pulls href from "div.a" selector element; passes list of results to Method mapped to "Dummy"
-
+Action type is for the actual functions that will process query's results and return same or processed result.
 */
-
-type Action func(GoqueryResults) (GoqueryResults, error)
+type Action func([]GoqueryResults, int) ([]GoqueryResults, error)
 
 type QueryDSL struct {
-	URIFlows []URIFlow `json:"uriflows"`
+	URIFlows [](*URIFlow) `json:"uriflows"`
 }
 
 type URIFlow struct {
-	URI        URI         `json:"uri"`
-	QueryFlows []QueryFlow `json:"queryflows"`
+	URI        URI            `json:"uri"`
+	QueryFlows [](*QueryFlow) `json:"queryflows"`
 }
 
 type URI string
 
 type QueryFlow struct {
-	Content GoqueryResults `json:"content"`
-	Queries []Query        `json:"queries"`
+	ResultsList []GoqueryResults `json:"content"`
+	Queries     [](*Query)       `json:"queries"`
 }
 
 type DOMSelection *goquery.Document
@@ -65,22 +38,32 @@ type Query struct {
 	ActionName string   `json:"action"`
 }
 
-func (queryDSL QueryDSL) Proc(actionmap map[string]Action) {
-	for _, uri := range queryDSL.URIFlows {
-		uri.Proc(actionmap)
+/*
+QueryDSL.Proc processes QueryDSL DSL block.
+*/
+func (queryDSL *QueryDSL) Proc(actionmap map[string]Action) {
+	for _, uriflow := range queryDSL.URIFlows {
+		uriflow.Proc(actionmap)
 	}
 }
 
-func (uriFlow URIFlow) Proc(actionmap map[string]Action) {
-	for _, query := range uriFlow.QueryFlows {
-		query.Proc(actionmap, uriFlow.URI)
+/*
+URIFlow.Proc processes URIFlow DSL block.
+*/
+func (uriFlow *URIFlow) Proc(actionmap map[string]Action) {
+	for _, queryflow := range uriFlow.QueryFlows {
+		queryflow.Proc(actionmap, uriFlow.URI)
 	}
 }
 
-func (queryFlow QueryFlow) Proc(actionmap map[string]Action, uri URI) {
-	for _, q := range queryFlow.Queries {
+/*
+QueryFlow.Proc processes QueryFlow DSL block.
+*/
+func (queryFlow *QueryFlow) Proc(actionmap map[string]Action, uri URI) {
+	queryFlow.ResultsList = make([]GoqueryResults, len(queryFlow.Queries))
+	for idx, q := range queryFlow.Queries {
 		var err error
-		queryFlow.Content, err = GoqueryAttrsFromParents(string(uri),
+		queryFlow.ResultsList[idx], err = GoqueryAttrsFromParents(string(uri),
 			q.Selector,
 			q.Attribute)
 		if err != nil {
@@ -88,7 +71,7 @@ func (queryFlow QueryFlow) Proc(actionmap map[string]Action, uri URI) {
 			return
 		}
 
-		queryFlow.Content, err = actionmap[q.ActionName](queryFlow.Content)
+		queryFlow.ResultsList, err = actionmap[q.ActionName](queryFlow.ResultsList, idx)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -97,25 +80,21 @@ func (queryFlow QueryFlow) Proc(actionmap map[string]Action, uri URI) {
 }
 
 /*
-func SelectionText(doc *goquery.Document, matcher string) (txt string) {
-	doc.Find(matcher).Each(func(i int, htmlSel *goquery.Selection) {
-		txt += htmlSel.Text()
-	})
-	return
-}
+FromJson can be passed QueryDSL representing JSON blob and map of action name to function, to process the DSL.
 */
-
-func FromJson(jsonBlob []byte, actionmap map[string]Action) error {
-	var qDSL QueryDSL
-	err := json.Unmarshal(jsonBlob, &qDSL)
+func FromJson(jsonBlob []byte, actionmap map[string]Action) (qDSL QueryDSL, err error) {
+	err = json.Unmarshal(jsonBlob, &qDSL)
 	if err != nil {
-		return err
+		return
 	}
 	qDSL.Proc(actionmap)
-	return nil
+	return
 }
 
-func FromFile(path string, actionmap map[string]Action) error {
+/*
+FromFile can be passed file with JSON blob representing QueryDSL and map of action name to function, to process the DSL.
+*/
+func FromFile(path string, actionmap map[string]Action) (QueryDSL, error) {
 	fileblob, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -123,4 +102,14 @@ func FromFile(path string, actionmap map[string]Action) error {
 	}
 
 	return FromJson(fileblob, actionmap)
+}
+
+/*
+Debug is a sample built-in action. That can be passed as action for query/queries to print results during development phase.
+*/
+func Debug(resultsList []GoqueryResults, idx int) ([]GoqueryResults, error) {
+	for _, result := range resultsList[idx].Results {
+		fmt.Println(result)
+	}
+	return resultsList, nil
 }
