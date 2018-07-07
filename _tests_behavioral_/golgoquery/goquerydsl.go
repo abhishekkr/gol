@@ -7,9 +7,19 @@ import (
 	golgoquery "github.com/abhishekkr/gol/golgoquery"
 )
 
-func Dummy(resultsList []golgoquery.GoqueryResults, idx int) ([]golgoquery.GoqueryResults, error) {
-	for _, result := range resultsList[idx].Results {
+func printGoqueryResults(results golgoquery.GoqueryResults) {
+	for _, result := range results.Results {
 		fmt.Println(result)
+	}
+}
+
+func Dummy(resultsList []golgoquery.GoqueryResults, idx int) ([]golgoquery.GoqueryResults, error) {
+	if idx == -1 {
+		for _, result := range resultsList {
+			printGoqueryResults(result)
+		}
+	} else {
+		printGoqueryResults(resultsList[idx])
 	}
 	return resultsList, nil
 }
@@ -23,7 +33,7 @@ var (
 		&golgoquery.Query{
 			Selector:   selector,
 			Attribute:  attribute,
-			ActionName: "Dummy",
+			ActionName: "NotThere",
 		},
 	}
 
@@ -53,9 +63,11 @@ var (
     { "uri": "http://example.com/",
       "queryflows": [ {
 			"queries": [
-				{ "selector": ["div", "p"], "attribute": "text", "action": "Dummy" },
-				{ "selector": ["div", "a"], "attribute": "href", "action": "Dummy" }
-			] }
+			{ "selector": ["div", "p", "a"], "attribute": "text", "action": "~" },
+			{ "selector": ["div", "p", "a"], "attribute": "href", "action": "~" }
+			],
+			"action": "debug"
+		}
       ] }
   ] }`
 )

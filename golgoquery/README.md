@@ -19,7 +19,7 @@
             {
               "selector": ["div", "a"],
               "attribute": "href",
-              "action": "Debug"
+              "action": "debug"
             }
           ]
         }
@@ -49,14 +49,14 @@
             {
               "selector": ["div", "p"],
               "attribute": "text",
-              "action": "Dummy"
+              "action": "Echo"
             },
             {
               "selector": ["div", "a"],
               "attribute": "href",
-              "action": "Dummy"
             }
-          ]
+          ],
+          "action": "debug"
         }
       ]
     }
@@ -64,5 +64,14 @@
 }
 ```
 
+* fetchs "uri"
+* processes queries in queryflows, but since just one "query" has an action, action will be triggered only in that query processing
+* after all "queries" processed for "queryflows", since "queryflows" has an action... it will be called with list of all results and index "1"
+
+---
+
+NOTE:
+
+* if no action is passed, "debug" action will be called for it printing the result unless action name has been mentioned as "~"
 
 ---
