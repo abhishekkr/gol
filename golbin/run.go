@@ -113,12 +113,12 @@ func execCmd(cmdHandle *exec.Cmd) (out string, err error) {
 	return
 }
 
-func Exec(cmd string) (out string, err error) {
+func Exec(cmd string) (string, error) {
 	cmdHandle := cmdStringToExecCmd(cmd)
 	return execCmd(cmdHandle)
 }
 
-func ExecWithEnv(cmd string, env map[string]string) (out string, err error) {
+func ExecWithEnv(cmd string, env map[string]string) (string, error) {
 	cmdHandle := cmdStringToExecCmd(cmd)
 	cmdHandle.Env = os.Environ()
 	for envVar, envVal := range env {
