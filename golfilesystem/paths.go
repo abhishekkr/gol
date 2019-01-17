@@ -7,8 +7,5 @@ PathExists is a non error-throwing simple boolean proxy for existence of a files
 */
 func PathExists(path string) bool {
 	_, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }

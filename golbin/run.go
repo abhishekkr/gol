@@ -94,7 +94,7 @@ func cmdStringToExecCmd(cmd string) *exec.Cmd {
 	first := parts[0]
 	rest := []string{}
 	if len(parts) > 1 {
-		rest = parts[1:len(parts)]
+		rest = parts[1:]
 	}
 	return exec.Command(first, rest...)
 }

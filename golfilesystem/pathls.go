@@ -78,7 +78,10 @@ func doPathWalk(dirPath string, recurseDepth int, filetypes []string, filetypeBo
 	}
 
 	callback := func(path string, fi os.FileInfo, err error) error {
-		return walkFile(fullPath, path, fi, err, recurseDepth, filetypes, filetypeBool, &pathMap)
+		if err != nil {
+			return err
+		}
+		return walkFile(fullPath, path, fi, recurseDepth, filetypes, filetypeBool, &pathMap)
 	}
 
 	errWalk := filepath.Walk(fullPath, callback)
@@ -88,17 +91,19 @@ func doPathWalk(dirPath string, recurseDepth int, filetypes []string, filetypeBo
 /*
 walkFile gets called on all entries of filepath.Walk, it populates inferred pathMap for a cumulative result.
 */
-func walkFile(root string, path string, fi os.FileInfo, err error, recurseDepth int, filetypes []string, filetypeBool bool, pathMap *map[int]string) error {
+func walkFile(root string, path string, fi os.FileInfo, recurseDepth int, filetypes []string, filetypeBool bool, pathMap *map[int]string) error {
 	if fi.IsDir() {
 		return nil
 	}
 	relativePath, err := filepath.Rel(root, path)
-	currentDepth := len(strings.Split(relativePath, "/")) - 1
+	if err != nil {
+		return err
+	}
 
+	currentDepth := len(strings.Split(relativePath, "/")) - 1
 	if recurseDepth != -1 && recurseDepth < currentDepth {
 		return nil
 	}
-
 	if isMedia(filepath.Ext(path), filetypes) == filetypeBool {
 		(*pathMap)[len(*pathMap)] = path
 	}

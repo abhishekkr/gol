@@ -16,7 +16,7 @@ func Boohoo(errstring string, rise bool) {
 	if BoohooType == "stdout" {
 		fmt.Println(errstring)
 	}
-	if rise == true {
+	if rise {
 		panic(errstring)
 	}
 }

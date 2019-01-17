@@ -25,8 +25,7 @@ func HasEnv(envVar string) bool {
 }
 
 func EnvMap() map[string]string {
-	var key_val map[string]string
-	key_val = make(map[string]string)
+	var key_val = make(map[string]string)
 
 	for _, envKeyVal := range os.Environ() {
 		envKeyValSplit := strings.Split(envKeyVal, "=")

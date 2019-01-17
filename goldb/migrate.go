@@ -21,13 +21,12 @@ type DataStore struct {
 }
 
 func reverseList(migrations []string) []string {
-	var revMigrations []string
-	revMigrations = make([]string, len(migrations))
+	var revMigrations = make([]string, len(migrations))
 
 	migrationsLen := len(migrations)
 
 	revIdx := 0
-	for idx, _ := range migrations {
+	for idx := range migrations {
 		if migrations[migrationsLen-idx-1] == "" {
 			continue
 		}
@@ -48,8 +47,7 @@ func (datastore *DataStore) migrationFiles(migrationsDir string) []string {
 		log.Fatal(err)
 	}
 
-	var migrationFiles []string
-	migrationFiles = make([]string, len(sqlFiles))
+	var migrationFiles = make([]string, len(sqlFiles))
 	migrationFilesIdx := 0
 	for _, sqlFile := range sqlFiles {
 		if sqlFile.IsDir() {
@@ -70,10 +68,7 @@ func (datastore *DataStore) checkMigrationInDB(file string) bool {
 	var uuid string
 	err := datastore.DB.QueryRow(queryStmt).Scan(&uuid)
 
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func (datastore *DataStore) isMigrationRequired(file string, migrationType string) bool {
@@ -96,8 +91,7 @@ func (datastore *DataStore) isMigrationRequired(file string, migrationType strin
 }
 
 func (datastore *DataStore) migrationFilesForType(allMigrations []string, migrationType string) []string {
-	var requiredMigrations []string
-	requiredMigrations = make([]string, len(allMigrations))
+	var requiredMigrations = make([]string, len(allMigrations))
 	requiredMigrationsIdx := 0
 	for _, sqlFile := range allMigrations {
 		if datastore.isMigrationRequired(sqlFile, migrationType) {

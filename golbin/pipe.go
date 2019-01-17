@@ -1,7 +1,6 @@
 package golbin
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -18,10 +17,10 @@ Run executes command from console with a pipe to get back.
 */
 func (konsolePipe *ConsolePipe) Run() error {
 	if konsolePipe.PipePath == "" {
-		return errors.New(fmt.Sprintf("Pipe path not configured."))
+		return fmt.Errorf("Pipe path not configured.")
 	}
 	if golfilesystem.PathExists(konsolePipe.PipePath) {
-		return errors.New(fmt.Sprintf("%s path already exists!", konsolePipe.PipePath))
+		return fmt.Errorf("%s path already exists!", konsolePipe.PipePath)
 	}
 	ExecOutput(fmt.Sprintf("mkfifo %s", konsolePipe.PipePath))
 
@@ -35,7 +34,7 @@ Pipe pipes given input to PipePath.
 */
 func (konsolePipe *ConsolePipe) Pipe(input string) error {
 	if !golfilesystem.PathExists(konsolePipe.PipePath) {
-		return errors.New(fmt.Sprintf("%s path doesn't exists!", konsolePipe.PipePath))
+		return fmt.Errorf("%s path doesn't exists!", konsolePipe.PipePath)
 	}
 	cmd := fmt.Sprintf("echo '%s' > %s", input, konsolePipe.PipePath)
 	ExecOutput(cmd)
