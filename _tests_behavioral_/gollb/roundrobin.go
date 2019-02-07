@@ -30,6 +30,7 @@ func testLoad() {
 	rr := gollb.RoundRobin{}
 	rr.Load(services)
 
+	fmt.Println("a/bc: ", rr.GetBackend("/a/bc"))
 	fmt.Println("a: ", rr.GetBackend("/a"))
 	fmt.Println("a: ", rr.GetBackend("/a"))
 	fmt.Println("a: ", rr.GetBackend("/a"))
@@ -53,6 +54,7 @@ func testLoadWithSeparator() {
 	rr := gollb.RoundRobin{}
 	rr.LoadWithSeparator(services, " ")
 
+	fmt.Println("a/bc: ", rr.GetBackend("/a/bc"))
 	fmt.Println("a: ", rr.GetBackend("/a"))
 	fmt.Println("a: ", rr.GetBackend("/a"))
 	fmt.Println("a: ", rr.GetBackend("/a"))

@@ -32,6 +32,9 @@ func (lb *RoundRobin) LoadWithSeparator(Services map[string]string, separator st
 }
 
 func (lb *RoundRobin) GetBackend(svc string) string {
+	if lb.ServiceRings[svc] == nil {
+		return ""
+	}
 	lb.ServiceRings[svc] = lb.ServiceRings[svc].Next()
 	return lb.ServiceRings[svc].Value.(string)
 }
