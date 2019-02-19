@@ -12,7 +12,11 @@ func main() {
 	txtAsByte := []byte(txt)
 	key := golcrypt.MD5(txtAsByte)
 
-	aesBlock := golcrypt.AESBlock{DataBlob: txtAsByte, Key: []byte(key), Cipher: nil}
+	aesBlock := golcrypt.AESBlock{
+		DataBlob: txtAsByte,
+		Key:      golcrypt.KeyForAES([]byte(key)),
+		Cipher:   nil,
+	}
 
 	fmt.Println(key)
 

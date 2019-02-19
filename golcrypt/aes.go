@@ -3,7 +3,9 @@ package golcrypt
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"io"
 )
@@ -16,6 +18,12 @@ type AESBlock struct {
 	DataBlob DataBlob
 	Cipher   Cipher
 	Key      Key
+}
+
+func KeyForAES(key []byte) []byte {
+	hasher := md5.New()
+	hasher.Write(key)
+	return []byte(hex.EncodeToString(hasher.Sum(nil)))
 }
 
 func (aesBlock *AESBlock) Encrypt() error {
