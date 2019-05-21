@@ -12,7 +12,7 @@ type Configurator interface {
 }
 
 /*
-ConfiguratorList containes reference to all config adapters to be fetched for usage.
+ConfiguratorList contains reference to all config adapters to be fetched for usage.
 */
 var ConfiguratorList = make(map[string]Configurator)
 

@@ -1,7 +1,6 @@
 package golgoquery
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -61,9 +60,9 @@ func (results *GoqueryResults) GoqueryAttrsFrom(domNodes *goquery.Selection, att
 		}
 		if !attrPresent {
 			if err == nil {
-				err = errors.New(fmt.Sprintf("%s", attr))
+				err = fmt.Errorf("%s", attr)
 			} else {
-				err = errors.New(fmt.Sprintf("%s | %s", err.Error(), attr))
+				err = fmt.Errorf("%s | %s", err.Error(), attr)
 			}
 		}
 

@@ -4,8 +4,8 @@ import (
 	"net"
 )
 
-func IsPortOpen(port_number string) bool {
-	ln, err := net.Listen("tcp", ":"+port_number)
+func IsPortOpen(portNumber string) bool {
+	ln, err := net.Listen("tcp", ":"+portNumber)
 	if err != nil {
 		return true
 	}
@@ -13,6 +13,6 @@ func IsPortOpen(port_number string) bool {
 	return false
 }
 
-func IsPortClosed(port_number string) bool {
-	return !IsPortOpen(port_number)
+func IsPortClosed(portNumber string) bool {
+	return !IsPortOpen(portNumber)
 }

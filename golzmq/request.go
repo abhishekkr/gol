@@ -8,10 +8,10 @@ import (
 )
 
 /* returns ZMQ Request Socket created at given IP-string and Ports-int-array */
-func ZmqRequestSocket(ip string, request_ports []int) *zmq.Socket {
+func ZmqRequestSocket(ip string, requestPorts []int) *zmq.Socket {
 	context, _ := zmq.NewContext()
 	socket, _ := context.NewSocket(zmq.REQ)
-	for _, _port := range request_ports {
+	for _, _port := range requestPorts {
 		socket.Connect(fmt.Sprintf("tcp://%s:%d", ip, _port))
 	}
 	return socket

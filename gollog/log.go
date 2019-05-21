@@ -24,7 +24,7 @@ Log to declare different streams to manage log
 logInfo := gollog.Log{Level: "info", Thread: make(chan string)}
 go logInfo.LogIt()
 
-logInfo.Thread <- fmt.Sprintf("Message Recieved: %s", string(msg))
+logInfo.Thread <- fmt.Sprintf("Message Received: %s", string(msg))
 */
 type Log struct {
 	Level  string
