@@ -1,6 +1,7 @@
 package gollog
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -47,7 +48,17 @@ func Debug(msg string) {
 	logrus.Debug(msg)
 }
 
+func Debugf(msg string, param ...interface{}) {
+	msg = fmt.Sprintf(msg, param...)
+	logrus.Debug(msg)
+}
+
 func Info(msg string) {
+	logrus.Info(msg)
+}
+
+func Infof(msg string, param ...interface{}) {
+	msg = fmt.Sprintf(msg, param...)
 	logrus.Info(msg)
 }
 
@@ -55,10 +66,25 @@ func Warn(msg string) {
 	logrus.Warn(msg)
 }
 
+func Warnf(msg string, param ...interface{}) {
+	msg = fmt.Sprintf(msg, param...)
+	logrus.Warn(msg)
+}
+
 func Err(msg string) {
 	logrus.Error(msg)
 }
 
+func Errf(msg string, param ...interface{}) {
+	msg = fmt.Sprintf(msg, param...)
+	logrus.Error(msg)
+}
+
 func Panic(msg string) {
+	logrus.Panic(msg)
+}
+
+func Panicf(msg string, param ...interface{}) {
+	msg = fmt.Sprintf(msg, param...)
 	logrus.Panic(msg)
 }
