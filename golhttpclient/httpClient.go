@@ -133,6 +133,10 @@ func (httpRequest *HTTPRequest) httpResponse() (resp *http.Response, err error) 
 	return
 }
 
+func (httpRequest *HTTPRequest) Response() (*http.Response, error) {
+	return httpRequest.httpResponse()
+}
+
 func (httpRequest *HTTPRequest) httpResponseBytes() (body []byte, err error) {
 	resp, err := httpRequest.httpResponse()
 	if err != nil {

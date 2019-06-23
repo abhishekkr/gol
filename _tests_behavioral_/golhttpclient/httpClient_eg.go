@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 
 	"github.com/abhishekkr/gol/golhttpclient"
@@ -20,7 +21,20 @@ func main() {
 		log.Println(err)
 	}
 
+	responseC, err := req.Response()
+	if err != nil {
+		log.Println(err)
+	}
+	responseCBody, err := ioutil.ReadAll(responseC.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
 	if response != string(responseB) || len(response) == 0 {
+		log.Fatalln("different responses")
+	}
+
+	if response != string(responseCBody) || len(response) == 0 {
 		log.Fatalln("different responses")
 	}
 
