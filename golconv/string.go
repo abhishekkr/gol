@@ -17,3 +17,13 @@ func StringToUint64(n string, defaultValue uint64) uint64 {
 	}
 	return defaultValue
 }
+
+func StringToBool(b string, defaultValue bool) bool {
+	switch b {
+	case "true":
+		return true
+	case "false":
+		return false
+	}
+	return defaultValue
+}

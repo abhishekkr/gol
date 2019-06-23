@@ -27,7 +27,7 @@ func AssertEqual(expected interface{}, result interface{}) {
 		return
 	}
 	switch result.(type) {
-	case string, int, error, bool:
+	case string, uint, uint64, int, int64, error, bool:
 		if expected != result {
 			panic(fmt.Sprintf("Error: [] Mismatched Values\nExpected value: %v\nResult: %v", expected, result))
 		}
