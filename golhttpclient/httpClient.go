@@ -18,6 +18,7 @@ var (
 )
 
 type HTTPRequest struct {
+	Protocol    string
 	Method      string
 	Url         string
 	GetParams   map[string]string
@@ -189,8 +190,24 @@ func (httpRequest *HTTPRequest) Post() (body string, err error) {
 	return
 }
 
+func (httpRequest *HTTPRequest) Patch() (body string, err error) {
+	httpRequest.Method = "PATCH"
+	body, err = httpRequest.httpResponseBody()
+	return
+}
+
 func (httpRequest *HTTPRequest) Delete() (body string, err error) {
 	httpRequest.Method = "DELETE"
 	body, err = httpRequest.httpResponseBody()
 	return
+}
+
+func (httpRequest *HTTPRequest) Head() (*http.Response, error) {
+	httpRequest.Method = "HEAD"
+	return httpRequest.httpResponse()
+}
+
+func (httpRequest *HTTPRequest) Options() (*http.Response, error) {
+	httpRequest.Method = "OPTIONS"
+	return httpRequest.httpResponse()
 }

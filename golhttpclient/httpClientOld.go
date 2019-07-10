@@ -4,6 +4,7 @@ import "net/http"
 
 func httpResponseBody(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (body string, err error) {
 	httpRequest := HTTPRequest{
+		Protocol:    "HTTP/1.1",
 		Method:      httpMethod,
 		Url:         baseURL,
 		GetParams:   getParams,
@@ -15,6 +16,7 @@ func httpResponseBody(httpMethod string, baseURL string, getParams map[string]st
 
 func Http(httpMethod string, baseURL string, getParams map[string]string, httpHeaders map[string]string) (resp *http.Response, err error) {
 	httpRequest := HTTPRequest{
+		Protocol:    "HTTP/1.1",
 		Method:      httpMethod,
 		Url:         baseURL,
 		GetParams:   getParams,
