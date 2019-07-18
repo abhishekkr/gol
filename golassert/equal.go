@@ -18,6 +18,18 @@ func AssertType(expected interface{}, result interface{}) {
 	}
 }
 
+func Equal(expected interface{}, result interface{}) {
+	AssertEqual(expected, result)
+}
+
+func EqualStringArray(expected interface{}, result interface{}) {
+	AssertEqualStringArray(expected.([]string), result.([]string))
+}
+
+func EqualStringMap(expected interface{}, result interface{}) {
+	AssertEqualStringMap(expected.(map[string]string), result.(map[string]string))
+}
+
 /*
 AssertEqual asserts if expected result is same as returned result.
 */
@@ -57,6 +69,24 @@ func AssertEqualStringArray(expected []string, result []string) {
 		}
 		if !elementExists {
 			panic(fmt.Sprintf("Error: [] Item missing: %v.\nExpected Value: %v\nResult: %v", expected[expectedIdx], expected, result))
+		}
+	}
+}
+
+/*
+AssertEqualStringMap asserts two string:string maps.
+*/
+func AssertEqualStringMap(expected map[string]string, result map[string]string) {
+	AssertType(expected, result)
+	if expected == nil && result == nil {
+		return
+	}
+	if len(expected) != len(result) {
+		panic(fmt.Sprintf("Error: [] Different count of items\nExpected Value: %v\nResult: %v", expected, result))
+	}
+	for expectedKey := range expected {
+		if result[expectedKey] != expected[expectedKey] {
+			panic(fmt.Sprintf("Error: [] Item missing: %v.\nExpected Value: %v\nResult: %v", expected[expectedKey], expected, result))
 		}
 	}
 }
