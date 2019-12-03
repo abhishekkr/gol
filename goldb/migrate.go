@@ -110,6 +110,11 @@ func (datastore *DataStore) Connect() (err error) {
 	return err
 }
 
+func (datastore *DataStore) Ping() (err error) {
+	err = datastore.DB.Ping()
+	return
+}
+
 func (datastore *DataStore) RunSql(sql string) (err error) {
 	if _, err := datastore.DB.Exec(sql); err != nil {
 		log.Fatal(err)
