@@ -11,12 +11,12 @@ import (
 /*
 MkDir to make dir if not there already.
 */
-func MkDir(dirpath string) error {
+func MkDirWithPermission(dirpath string, mode os.FileMode) error {
 	if PathExists(dirpath) {
 		return nil
 	}
 
-	err := os.MkdirAll(dirpath, 0755)
+	err := os.MkdirAll(dirpath, mode)
 	if err != nil {
 		log.Println("Error creating directory")
 		log.Println(err)
@@ -24,6 +24,13 @@ func MkDir(dirpath string) error {
 	}
 
 	return nil
+}
+
+/*
+MkDir to make dir if not there already.
+*/
+func MkDir(dirpath string) error {
+	return MkDirWithPermission(dirpath, 0755)
 }
 
 /*

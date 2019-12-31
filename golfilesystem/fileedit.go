@@ -3,9 +3,23 @@ package golfilesystem
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"log"
+	"os"
 )
+
+func CreateBinaryFile(filename string, blob []byte) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(blob)
+	if err != nil {
+		f.Close()
+		return err
+	}
+	err = f.Close()
+	return err
+}
 
 func AppendToFile(filename, txt string) {
 	if filename == "" {
