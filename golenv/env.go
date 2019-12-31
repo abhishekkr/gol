@@ -3,6 +3,8 @@ package golenv
 import (
 	"os"
 	"strings"
+
+	"github.com/abhishekkr/gol/golconv"
 )
 
 func OverrideIfEnv(envVar string, defaultValue string) string {
@@ -11,6 +13,30 @@ func OverrideIfEnv(envVar string, defaultValue string) string {
 		if envVarValue != "" {
 			return envVarValue
 		}
+	}
+	return defaultValue
+}
+
+func OverrideIfEnvBool(envVar string, defaultValue bool) bool {
+	if HasEnv(envVar) {
+		envVarValue := os.Getenv(envVar)
+		return golconv.StringToBool(envVarValue, defaultValue)
+	}
+	return defaultValue
+}
+
+func OverrideIfEnvInt(envVar string, defaultValue int) int {
+	if HasEnv(envVar) {
+		envVarValue := os.Getenv(envVar)
+		return golconv.StringToInt(envVarValue, defaultValue)
+	}
+	return defaultValue
+}
+
+func OverrideIfEnvUint64(envVar string, defaultValue uint64) uint64 {
+	if HasEnv(envVar) {
+		envVarValue := os.Getenv(envVar)
+		return golconv.StringToUint64(envVarValue, defaultValue)
 	}
 	return defaultValue
 }
