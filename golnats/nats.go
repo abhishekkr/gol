@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/nats-io/go-nats"
+	nats "github.com/nats-io/nats.go"
 )
 
 /*
