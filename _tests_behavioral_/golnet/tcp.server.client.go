@@ -21,7 +21,7 @@ func SomeReplies(bufRequest []byte) []byte {
 
 func main() {
 	go golnet.TCPServer("localhost:3456", SomeReplies)
-	time.Sleep(2 * time.Second)
+	time.Sleep(time.Duration(2) * time.Second)
 	client1 := golnet.CreateTCPClient("localhost:3456")
 	client2 := golnet.CreateTCPClient("localhost:3456")
 	defer client1.Connection.Close()

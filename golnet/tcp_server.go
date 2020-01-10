@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+var (
+	TcpServerHalt = false
+)
+
 type RequestParamFunc func(request []byte) (reply []byte)
 
 func TCPServer(connection_string string, request_handler RequestParamFunc) {
@@ -18,6 +22,10 @@ func TCPServer(connection_string string, request_handler RequestParamFunc) {
 
 	defer server.Close()
 	for {
+		if TcpServerHalt {
+			server.Close()
+			return
+		}
 		connection, err := server.Accept()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
