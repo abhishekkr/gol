@@ -48,7 +48,7 @@ func customRoundTripper() (customTransport http.RoundTripper) {
 	return
 }
 
-func UrlRedirectTo(url string) string {
+func UrlRedirectTo(uri string) string {
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return nil
@@ -56,7 +56,7 @@ func UrlRedirectTo(url string) string {
 		Transport: customRoundTripper(),
 	}
 
-	resp, err := client.Get(url)
+	resp, err := client.Get(uri)
 
 	if err != nil {
 		log.Println(err)
@@ -65,29 +65,31 @@ func UrlRedirectTo(url string) string {
 	return resp.Request.URL.String()
 }
 
-func LinkExists(url string) bool {
+func LinkExists(uri string) bool {
 	var netClient = &http.Client{
 		Timeout:   time.Second * 10,
 		Transport: customRoundTripper(),
 	}
-	response, err := netClient.Get(url)
+	response, err := netClient.Get(uri)
 	if err != nil || response.StatusCode > 399 {
 		return false
 	}
 	return true
 }
 
-func (httpRequest *HTTPRequest) getURL() (url *url.URL) {
+func (httpRequest *HTTPRequest) getURL() (uri *url.URL) {
 	var getParamsURI string
+	var _val string
 	for key, val := range httpRequest.GetParams {
+		_val = url.QueryEscape(val)
 		if getParamsURI == "" {
-			getParamsURI = fmt.Sprintf("%s=%s", key, val)
+			getParamsURI = fmt.Sprintf("%s=%s", key, _val)
 		} else {
-			getParamsURI = fmt.Sprintf("%s&%s=%s", getParamsURI, key, val)
+			getParamsURI = fmt.Sprintf("%s&%s=%s", getParamsURI, key, _val)
 		}
 	}
 	requestUrl := fmt.Sprintf("%s?%s", httpRequest.Url, getParamsURI)
-	url, err := url.Parse(requestUrl)
+	uri, err := url.Parse(requestUrl)
 
 	if err != nil {
 		log.Println(err)
