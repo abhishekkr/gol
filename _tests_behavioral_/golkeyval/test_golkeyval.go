@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	dataToUse map[string]string
-	dbPath    = "/tmp/dbs/golkeyval_sqlite3"
-	tableName = "alpha"
+	dataToUse    map[string]string
+	dbPathPrefix = "/tmp/dbs/golkeyval_"
+	tableName    = "alpha"
 )
 
 /*
@@ -35,6 +35,7 @@ TestGolKeyVal checks for following actions via golkeyval
 	* closing and deleting db
 */
 func TestGolKeyVal(engineName string, cfg map[string]string) {
+	fmt.Printf("running for engine: %s\n\n", engineName)
 	db := golkeyval.GetDBEngine(engineName)
 	db.Configure(cfg)
 
@@ -66,7 +67,34 @@ func TestGolKeyVal(engineName string, cfg map[string]string) {
 			panic(fmt.Sprintf("ERROR: DelKey failed for %s: %s", _key, dataToUse[_key]))
 		}
 	}
-	db.CloseAndDeleteDB()
+	for _key := range dataToUse {
+		if !db.PushKeyVal(_key, dataToUse[_key]) {
+			db.CloseAndDeleteDB()
+			panic(fmt.Sprintf("ERROR: PushKeyVal failed for %s: %s", _key, dataToUse[_key]))
+		}
+	}
+	db.CloseDB()
+}
+
+/*
+TestBadger runs tests for badger engine.
+*/
+func TestBadger() {
+	cfg := make(map[string]string)
+	cfg["DBPath"] = fmt.Sprintf("%sbadger", dbPathPrefix)
+	cfg["DetectConflicts"] = "false"
+	cfg["NumGoroutines"] = "8"
+	cfg["LogLevel"] = "WARNING"
+	TestGolKeyVal("badger", cfg)
+}
+
+/*
+TestBitcask runs tests for bitcask engine.
+*/
+func TestBitcask() {
+	cfg := make(map[string]string)
+	cfg["DBPath"] = fmt.Sprintf("%sbitcask", dbPathPrefix)
+	TestGolKeyVal("bitcask", cfg)
 }
 
 /*
@@ -74,7 +102,7 @@ TestSqlite3 runs tests for sqlite3 engine.
 */
 func TestSqlite3() {
 	cfg := make(map[string]string)
-	cfg["DBPath"] = dbPath
+	cfg["DBPath"] = fmt.Sprintf("%ssqlite3", dbPathPrefix)
 	cfg["TableName"] = tableName
 	TestGolKeyVal("sqlite3", cfg)
 }
@@ -84,7 +112,7 @@ TestLevelDB runs tests for leveldb engine.
 */
 func TestLevelDB() {
 	cfg := make(map[string]string)
-	cfg["DBPath"] = dbPath
+	cfg["DBPath"] = fmt.Sprintf("%sleveldb", dbPathPrefix)
 	TestGolKeyVal("leveldb", cfg)
 }
 
@@ -92,6 +120,8 @@ func TestLevelDB() {
 yeah main
 */
 func main() {
+	TestBadger()
+	TestBitcask()
 	TestSqlite3()
 	TestLevelDB()
 	fmt.Println("pass not panic")
