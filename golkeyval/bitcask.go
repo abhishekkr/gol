@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	bitcask "github.com/prologic/bitcask"
+	bitcask "git.mills.io/prologic/bitcask"
 
 	golerror "github.com/abhishekkr/gol/golerror"
 )
