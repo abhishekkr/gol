@@ -20,23 +20,11 @@ type Console struct {
 }
 
 /*
-startCommand runs passed command string and returns it.
-*/
-func startCommand(sysCommand string) *exec.Cmd {
-	cmdTokens := strings.Split(sysCommand, " ")
-	cmd := cmdTokens[0]
-	if len(cmdTokens) == 1 {
-		return exec.Command(cmd)
-	}
-	return exec.Command(cmd, strings.Join(cmdTokens[1:], " "))
-}
-
-/*
 Run executes command from Console field with its input
 and sets the output or error whatever gets prompted.
 */
 func (konsole *Console) Run() (err error) {
-	cmd := startCommand(konsole.Command)
+	cmd := cmdStringToExecCmd(konsole.Command)
 	if konsole.StdInput != "" {
 		cmd.Stdin = strings.NewReader(konsole.StdInput)
 	}
@@ -57,7 +45,7 @@ func (konsole *Console) Run() (err error) {
 ExecOutput can be passed a command to quickly get its output or error.
 */
 func ExecOutput(cmdline string) string {
-	cmd := startCommand(cmdline)
+	cmd := cmdStringToExecCmd(cmdline)
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -94,7 +82,7 @@ func cmdStringToExecCmd(cmd string) *exec.Cmd {
 	first := parts[0]
 	rest := []string{}
 	if len(parts) > 1 {
-		rest = parts[1:]
+		rest = mergeTokensWithQuotes(parts[1:])
 	}
 	return exec.Command(first, rest...)
 }
@@ -126,4 +114,32 @@ func ExecWithEnv(cmd string, env map[string]string) (string, error) {
 	}
 
 	return execCmd(cmdHandle)
+}
+
+func mergeTokensWithQuotes(words []string) []string {
+	tokens := []string{}
+	var inSingleQuotes, inDoubleQuotes bool
+	for _, w := range words {
+		if inSingleQuotes || inDoubleQuotes {
+			tokens = append(tokens[0:len(tokens)-1], tokens[len(tokens)-1]+" "+w)
+			if strings.ContainsRune(w, '\'') && inSingleQuotes {
+				inSingleQuotes = false
+			} else if strings.ContainsRune(w, '"') && inDoubleQuotes {
+				inDoubleQuotes = false
+			}
+			continue
+		}
+
+		tokens = append(tokens, w)
+		if strings.ContainsRune(w, '\'') {
+			if strings.Count(w, "'")%2 == 1 {
+				inSingleQuotes = true
+			}
+		} else if strings.ContainsRune(w, '"') {
+			if strings.Count(w, "\"")%2 == 1 {
+				inDoubleQuotes = true
+			}
+		}
+	}
+	return tokens
 }
