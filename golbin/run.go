@@ -141,5 +141,16 @@ func mergeTokensWithQuotes(words []string) []string {
 			}
 		}
 	}
-	return tokens
+	result := make([]string, len(tokens))
+	for idx, token := range tokens {
+		result[idx] = stripQuotes(token)
+	}
+	return result
+}
+
+func stripQuotes(w string) string {
+	if (w[0] == '\'' && w[len(w)-1] == '\'') || (w[0] == '"' && w[len(w)-1] == '"') {
+		return w[1 : len(w)-1]
+	}
+	return w
 }
